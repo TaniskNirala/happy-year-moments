@@ -36,7 +36,9 @@ const scattered: { e?: string; w?: string; t: string; l: string; r: string }[] =
 ];
 
 
-const memories = [
+// Drop your own photos in: add img: "..." next to any memory below
+type Memory = { e: string; title: string; text: string; img?: string };
+const memories: Memory[] = [
   { e: "🍦", title: "Ice cream > everything", text: "Ice cream is a food group for her. Dinner is optional. Ice cream isn't." },
   { e: "😴", title: "Professional sleeper", text: "Sleeps like it's an Olympic sport. Gold medal every year." },
   { e: "🥞", title: "Dosa devotion", text: "If dosa were a person, I'd honestly be scared of the competition." },
@@ -44,6 +46,7 @@ const memories = [
   { e: "🎓", title: "Topper ji", text: "Says 'I didn't study at all' and then tops. Every. Single. Time." },
   { e: "🖤", title: "Black everything", text: "Wardrobe colour palette: black, black, and a little more black." },
 ];
+
 
 const questions = [
   "How much did you enjoy being tanged this year?",
@@ -132,8 +135,13 @@ function Index() {
               {memories.map((m, i) => (
                 <div key={i} className="rounded-md bg-foreground p-3 pb-5 text-primary-foreground shadow-2xl transition-transform hover:scale-105"
                   style={{ transform: `rotate(${i % 2 ? 2 : -2}deg)` }}>
-                  <div className="flex h-36 items-center justify-center rounded bg-muted text-7xl">{m.e}</div>
+                  {m.img ? (
+                    <img src={m.img} alt={m.title} loading="lazy" className="h-36 w-full rounded object-cover" />
+                  ) : (
+                    <div className="flex h-36 items-center justify-center rounded bg-muted text-7xl">{m.e}</div>
+                  )}
                   <h3 className="mt-3 font-display text-2xl">{m.title}</h3>
+
                   <p className="mt-1 text-sm">{m.text}</p>
                 </div>
               ))}
