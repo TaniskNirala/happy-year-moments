@@ -146,7 +146,7 @@ function Index() {
               {questions.map((q, i) => (
                 <div key={i} className="flex flex-col items-center gap-2">
                   <p className="font-bold">{q}</p>
-                  <Stars value={ratings[i]} onChange={(n) => setRatings((r) => r.map((v, j) => (j === i ? n : v)))} />
+                  <Stars value={ratings[i] ?? 0} onChange={(n) => setRatings((r) => r.map((v, j) => (j === i ? n : v)))} />
                 </div>
               ))}
               <button onClick={() => setSubmitted(true)} className="rounded-full bg-primary px-6 py-3 font-display text-xl text-primary-foreground">
