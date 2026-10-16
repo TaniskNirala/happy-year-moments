@@ -64,6 +64,8 @@ function Index() {
   const [started, setStarted] = useState(false);
   const [ratings, setRatings] = useState([0, 0, 0]);
   const [submitted, setSubmitted] = useState(false);
+  const [tries, setTries] = useState(0);
+  const [note, setNote] = useState("");
   const [mixerClicks, setMixerClicks] = useState(0);
 
   const start = () => {
@@ -149,13 +151,26 @@ function Index() {
                   <Stars value={ratings[i] ?? 0} onChange={(n) => setRatings((r) => r.map((v, j) => (j === i ? n : v)))} />
                 </div>
               ))}
-              <button onClick={() => setSubmitted(true)} className="rounded-full bg-primary px-6 py-3 font-display text-xl text-primary-foreground">
+              <div className="flex flex-col items-center gap-2">
+                <p className="font-bold">Write me a little message 💌</p>
+                <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={4}
+                  placeholder="Say something nice... or roast me 😏"
+                  className="w-full rounded-md border bg-background p-3 text-foreground" />
+              </div>
+              <button onClick={() => { setSubmitted(true); setTries((t) => t + 1); }} className="rounded-full bg-primary px-6 py-3 font-display text-xl text-primary-foreground">
                 Submit review
               </button>
               {submitted && (
                 <p className="font-display text-xl text-accent">
-                  {ratings.every((r) => r === 5) ? "Full marks! As expected from a Topper 🎓" : "Wrong answer. Only 5 ice creams allowed. Try again 😤"}
+                  {ratings.every((r) => r === 5)
+                    ? "Full marks! As expected from a Topper 🎓"
+                    : tries < 3
+                      ? "So little?? 🥺 Think again, madam ji..."
+                      : "Okay okay, honest review accepted 😌 Thank you for being real 🖤"}
                 </p>
+              )}
+              {submitted && note.trim() && (ratings.every((r) => r === 5) || tries >= 3) && (
+                <p className="italic text-muted-foreground">Your message: "{note}" — saved in my heart forever 🐼</p>
               )}
             </div>
           </Section>
