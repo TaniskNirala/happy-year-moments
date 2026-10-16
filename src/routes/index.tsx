@@ -2,6 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import panda from "@/assets/panda.png";
 import mixer from "@/assets/mixer.png";
+import m1 from "@/assets/mem1.jpg.asset.json";
+import m2 from "@/assets/mem2.jpg.asset.json";
+import m3 from "@/assets/mem3.jpg.asset.json";
+import m4 from "@/assets/mem4.jpg.asset.json";
+import m5 from "@/assets/mem5.jpg.asset.json";
+import m6 from "@/assets/mem6.jpg.asset.json";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -36,15 +43,15 @@ const scattered: { e?: string; w?: string; t: string; l: string; r: string }[] =
 ];
 
 
-// Drop your own photos in: add img: "..." next to any memory below
+// Real photos are attached to each memory below
 type Memory = { e: string; title: string; text: string; img?: string };
 const memories: Memory[] = [
-  { e: "🍦", title: "Ice cream > everything", text: "Ice cream is a food group for her. Dinner is optional. Ice cream isn't." },
-  { e: "😴", title: "Professional sleeper", text: "Sleeps like it's an Olympic sport. Gold medal every year." },
-  { e: "🥞", title: "Dosa devotion", text: "If dosa were a person, I'd honestly be scared of the competition." },
-  { e: "🌥️", title: "Cloudy days", text: "Grey sky, cold breeze, and suddenly she's the happiest panda alive." },
-  { e: "🎓", title: "Topper ji", text: "Says 'I didn't study at all' and then tops. Every. Single. Time." },
-  { e: "🖤", title: "Black everything", text: "Wardrobe colour palette: black, black, and a little more black." },
+  { e: "🍦", img: m1.url, title: "Ice cream > everything", text: "Ice cream is a food group for her. Dinner is optional. Ice cream isn't." },
+  { e: "😴", img: m2.url, title: "Professional sleeper", text: "Sleeps like it's an Olympic sport. Gold medal every year." },
+  { e: "🥞", img: m3.url, title: "Dosa devotion", text: "If dosa were a person, I'd honestly be scared of the competition." },
+  { e: "🌥️", img: m4.url, title: "Cloudy days", text: "Grey sky, cold breeze, and suddenly she's the happiest panda alive." },
+  { e: "🎓", img: m5.url, title: "Topper ji", text: "Says 'I didn't study at all' and then tops. Every. Single. Time." },
+  { e: "🖤", img: m6.url, title: "Black everything", text: "Wardrobe colour palette: black, black, and a little more black." },
 ];
 
 
