@@ -43,7 +43,7 @@ const scattered: { e?: string; w?: string; t: string; l: string; r: string }[] =
 ];
 
 
-// Drop your own photos in: add img: "..." next to any memory below
+// Real photos are attached to each memory below
 type Memory = { e: string; title: string; text: string; img?: string };
 const memories: Memory[] = [
   { e: "🍦", img: m1.url, title: "Ice cream > everything", text: "Ice cream is a food group for her. Dinner is optional. Ice cream isn't." },
