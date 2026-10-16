@@ -126,6 +126,8 @@ function Index() {
             <div id="msg" className="max-w-2xl rounded-[var(--radius)] border bg-card p-8 backdrop-blur md:p-12">
               <h2 className="font-display text-4xl text-accent">A small message 🐼</h2>
               <p className="mt-6 text-lg leading-relaxed">
+                Pta Ni Na madam Ji kaise ek sal nikal gya apko pareshan krte kre bhot dimag khaya apka bhot chidhya faltu ki tesnion di 
+                <br />
                 One whole year ago, you had no idea what you were signing up for. 365 days of me
                 tanging you, calling you <b>Topper</b>, and being an absolute headache. And somehow
                 you're still here (probably because you were sleeping through most of it 😴).
