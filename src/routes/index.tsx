@@ -22,7 +22,7 @@ export const Route = createFileRoute("/")({
 });
 
 // Background scattered "photos" — replace emojis with real photos anytime
-const scattered = [
+const scattered: { e?: string; w?: string; t: string; l: string; r: string }[] = [
   { e: "🐼", t: "8%", l: "6%", r: "-8deg" }, { e: "🍦", t: "15%", l: "82%", r: "10deg" },
   { e: "😴", t: "42%", l: "3%", r: "6deg" }, { e: "🥞", t: "60%", l: "88%", r: "-6deg" },
   { e: "☁️", t: "78%", l: "10%", r: "-4deg" }, { e: "🍨", t: "88%", l: "70%", r: "8deg" },
