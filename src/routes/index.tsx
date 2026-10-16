@@ -27,7 +27,14 @@ const scattered = [
   { e: "😴", t: "42%", l: "3%", r: "6deg" }, { e: "🥞", t: "60%", l: "88%", r: "-6deg" },
   { e: "☁️", t: "78%", l: "10%", r: "-4deg" }, { e: "🍨", t: "88%", l: "70%", r: "8deg" },
   { e: "🐼", t: "30%", l: "92%", r: "-12deg" }, { e: "🎓", t: "70%", l: "45%", r: "5deg" },
+  { e: "🌻", t: "5%", l: "40%", r: "12deg" }, { e: "🌻", t: "50%", l: "75%", r: "-10deg" },
+  { e: "🌻", t: "92%", l: "25%", r: "7deg" }, { e: "🌻", t: "35%", l: "18%", r: "-6deg" },
+  { e: "🌻", t: "65%", l: "60%", r: "9deg" }, { e: "🌻", t: "20%", l: "65%", r: "-14deg" },
+  { w: "ramalaii", t: "12%", l: "55%", r: "-6deg" }, { w: "ramalaii", t: "45%", l: "8%", r: "5deg" },
+  { w: "ramalaii", t: "72%", l: "80%", r: "-4deg" }, { w: "ramalaii", t: "85%", l: "42%", r: "7deg" },
+  { w: "ramalaii", t: "28%", l: "78%", r: "-8deg" },
 ];
+
 
 const memories = [
   { e: "🍦", title: "Ice cream > everything", text: "Ice cream is a food group for her. Dinner is optional. Ice cream isn't." },
@@ -78,13 +85,16 @@ function Index() {
       {/* scattered background polaroids */}
       <div className="pointer-events-none fixed inset-0 z-0">
         {scattered.map((s, i) => (
-          <div key={i} className="floaty absolute rounded-md bg-foreground p-2 pb-6 opacity-20 shadow-xl"
-            style={{ top: s.t, left: s.l, ["--r" as string]: s.r, animationDelay: `${i * 0.7}s` }}>
-            <div className="flex h-20 w-20 items-center justify-center bg-muted text-5xl">{s.e}</div>
+          <div key={i} className={s.w ? "floaty absolute font-display opacity-20" : "floaty absolute rounded-md bg-foreground p-2 pb-6 opacity-20 shadow-xl"}
+            style={{ top: s.t, left: s.l, ["--r" as string]: s.r, animationDelay: `${i * 0.7}s`, fontSize: s.w ? "2.2rem" : undefined, color: s.w ? "var(--primary)" : undefined }}>
+            {s.w ? s.w : <div className="flex h-20 w-20 items-center justify-center bg-muted text-5xl">{s.e}</div>}
           </div>
         ))}
         <div className="drift absolute top-[12%] text-7xl opacity-30">☁️</div>
         <div className="drift absolute top-[55%] text-6xl opacity-20" style={{ animationDelay: "-25s" }}>☁️</div>
+        <div className="drift absolute top-[30%] text-6xl opacity-25" style={{ animationDelay: "-12s" }}>🌻</div>
+        <div className="drift absolute top-[80%] text-5xl opacity-20" style={{ animationDelay: "-38s" }}>🌻</div>
+
       </div>
 
       <Section>
