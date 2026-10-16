@@ -1,24 +1,178 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import panda from "@/assets/panda.png";
+import mixer from "@/assets/mixer.png";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Happy 1 Year of Tanging You, Topper!" },
+      { name: "description", content: "One year of friendship, pandas, ice creams and war against the mixer." },
+      { property: "og:title", content: "Happy 1 Year of Tanging You, Topper!" },
+      { property: "og:description", content: "One year of friendship, pandas, ice creams and war against the mixer." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Chewy&family=Nunito:wght@400;700;800&display=swap" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+// Background scattered "photos" — replace emojis with real photos anytime
+const scattered = [
+  { e: "🐼", t: "8%", l: "6%", r: "-8deg" }, { e: "🍦", t: "15%", l: "82%", r: "10deg" },
+  { e: "😴", t: "42%", l: "3%", r: "6deg" }, { e: "🥞", t: "60%", l: "88%", r: "-6deg" },
+  { e: "☁️", t: "78%", l: "10%", r: "-4deg" }, { e: "🍨", t: "88%", l: "70%", r: "8deg" },
+  { e: "🐼", t: "30%", l: "92%", r: "-12deg" }, { e: "🎓", t: "70%", l: "45%", r: "5deg" },
+];
+
+const memories = [
+  { e: "🍦", title: "Ice cream > everything", text: "Ice cream is a food group for her. Dinner is optional. Ice cream isn't." },
+  { e: "😴", title: "Professional sleeper", text: "Sleeps like it's an Olympic sport. Gold medal every year." },
+  { e: "🥞", title: "Dosa devotion", text: "If dosa were a person, I'd honestly be scared of the competition." },
+  { e: "🌥️", title: "Cloudy days", text: "Grey sky, cold breeze, and suddenly she's the happiest panda alive." },
+  { e: "🎓", title: "Topper ji", text: "Says 'I didn't study at all' and then tops. Every. Single. Time." },
+  { e: "🖤", title: "Black everything", text: "Wardrobe colour palette: black, black, and a little more black." },
+];
+
+const questions = [
+  "How much did you enjoy being tanged this year?",
+  "Rate my jokes (be honest... or kind)",
+  "How good a friend am I compared to a dosa?",
+];
+
+function Stars({ value, onChange }: { value: number; onChange: (n: number) => void }) {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="flex gap-1 text-3xl">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <button key={n} onClick={() => onChange(n)} className="transition-transform hover:scale-125" aria-label={`${n} stars`}>
+          {n <= value ? "🍦" : "🤍"}
+        </button>
+      ))}
     </div>
+  );
+}
+
+function Section({ children }: { children: React.ReactNode }) {
+  return <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-20 text-center">{children}</section>;
+}
+
+function Index() {
+  const [started, setStarted] = useState(false);
+  const [ratings, setRatings] = useState([0, 0, 0]);
+  const [submitted, setSubmitted] = useState(false);
+  const [mixerClicks, setMixerClicks] = useState(0);
+
+  const start = () => {
+    setStarted(true);
+    setTimeout(() => document.getElementById("msg")?.scrollIntoView({ behavior: "smooth" }), 50);
+  };
+
+  return (
+    <main className="relative overflow-hidden">
+      {/* scattered background polaroids */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        {scattered.map((s, i) => (
+          <div key={i} className="floaty absolute rounded-md bg-foreground p-2 pb-6 opacity-20 shadow-xl"
+            style={{ top: s.t, left: s.l, ["--r" as string]: s.r, animationDelay: `${i * 0.7}s` }}>
+            <div className="flex h-20 w-20 items-center justify-center bg-muted text-5xl">{s.e}</div>
+          </div>
+        ))}
+        <div className="drift absolute top-[12%] text-7xl opacity-30">☁️</div>
+        <div className="drift absolute top-[55%] text-6xl opacity-20" style={{ animationDelay: "-25s" }}>☁️</div>
+      </div>
+
+      <Section>
+        <img src={panda} alt="Panda eating ice cream" width={816} height={816} className="w-56 md:w-72" />
+        <p className="mt-4 font-display text-xl text-muted-foreground">Dear Topper ji,</p>
+        <h1 className="font-display text-5xl leading-tight md:text-7xl">
+          Happy <span className="text-primary">1 Year</span> of<br />Tanging You! 🎉
+        </h1>
+        {!started && (
+          <button onClick={start} className="mt-10 animate-bounce rounded-full bg-primary px-8 py-4 font-display text-2xl text-primary-foreground shadow-lg">
+            Tap here, madam ji 👇
+          </button>
+        )}
+      </Section>
+
+      {started && (
+        <>
+          <Section>
+            <div id="msg" className="max-w-2xl rounded-[var(--radius)] border bg-card p-8 backdrop-blur md:p-12">
+              <h2 className="font-display text-4xl text-accent">A small message 🐼</h2>
+              <p className="mt-6 text-lg leading-relaxed">
+                One whole year ago, you had no idea what you were signing up for. 365 days of me
+                tanging you, calling you <b>Topper</b>, and being an absolute headache. And somehow
+                you're still here (probably because you were sleeping through most of it 😴).
+              </p>
+              <p className="mt-4 text-lg leading-relaxed">
+                Thank you for being the best friend a dosa-stealing idiot could ask for. 🖤
+              </p>
+            </div>
+          </Section>
+
+          <Section>
+            <h2 className="font-display text-5xl">Sweet Memories 🍨</h2>
+            <div className="mt-10 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {memories.map((m, i) => (
+                <div key={i} className="rounded-md bg-foreground p-3 pb-5 text-primary-foreground shadow-2xl transition-transform hover:scale-105"
+                  style={{ transform: `rotate(${i % 2 ? 2 : -2}deg)` }}>
+                  <div className="flex h-36 items-center justify-center rounded bg-muted text-7xl">{m.e}</div>
+                  <h3 className="mt-3 font-display text-2xl">{m.title}</h3>
+                  <p className="mt-1 text-sm">{m.text}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-16 max-w-md rounded-[var(--radius)] border bg-card p-6">
+              <img src={mixer} alt="Evil mixer" width={816} height={816} loading="lazy"
+                className="mx-auto w-32 cursor-pointer transition-transform hover:rotate-12"
+                style={{ transform: `scale(${Math.max(0.3, 1 - mixerClicks * 0.15)})` }}
+                onClick={() => setMixerClicks((c) => c + 1)} />
+              <h3 className="font-display text-3xl text-primary">Her Greatest Enemy: The Mixer</h3>
+              <p className="mt-2 text-muted-foreground">
+                {mixerClicks === 0 ? "Hit it to defeat it! 👊" : mixerClicks < 5 ? `Hit ${mixerClicks} times... it's still loud 😤` : "Mixer defeated! The kitchen is safe again 🏆"}
+              </p>
+            </div>
+          </Section>
+
+          <Section>
+            <h2 className="font-display text-5xl">Your 1 Year Review 📝</h2>
+            <p className="mt-2 text-muted-foreground">Very official. Topper-level exam. No cheating.</p>
+            <div className="mt-8 w-full max-w-lg space-y-6 rounded-[var(--radius)] border bg-card p-8">
+              {questions.map((q, i) => (
+                <div key={i} className="flex flex-col items-center gap-2">
+                  <p className="font-bold">{q}</p>
+                  <Stars value={ratings[i] ?? 0} onChange={(n) => setRatings((r) => r.map((v, j) => (j === i ? n : v)))} />
+                </div>
+              ))}
+              <button onClick={() => setSubmitted(true)} className="rounded-full bg-primary px-6 py-3 font-display text-xl text-primary-foreground">
+                Submit review
+              </button>
+              {submitted && (
+                <p className="font-display text-xl text-accent">
+                  {ratings.every((r) => r === 5) ? "Full marks! As expected from a Topper 🎓" : "Wrong answer. Only 5 ice creams allowed. Try again 😤"}
+                </p>
+              )}
+            </div>
+          </Section>
+
+          <Section>
+            <img src={panda} alt="Happy panda" width={816} height={816} loading="lazy" className="w-48" />
+            <h2 className="font-display text-5xl md:text-7xl">Thank You 🖤</h2>
+            <p className="mt-6 max-w-xl text-xl leading-relaxed">
+              For the ice creams, the cloudy-day happiness, the naps, the dosas, and for tolerating me.
+            </p>
+            <p className="mt-8 font-display text-3xl text-primary md:text-5xl">
+              And I want to tang you forever, madam ji! 🐼🍦
+            </p>
+            <p className="mt-6 text-muted-foreground">— your favourite headache</p>
+          </Section>
+        </>
+      )}
+    </main>
   );
 }
