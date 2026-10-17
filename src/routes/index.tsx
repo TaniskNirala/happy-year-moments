@@ -67,7 +67,7 @@ const scattered: { e?: string; w?: string; img?: string; t: string; l: string; r
 // rotate: use when a photo was saved sideways. 90 = clockwise, -90 = counter-clockwise, 180 = upside down.
 type Memory = { title: string; text: string; photos: { src: string; alt: string; big?: boolean; wide?: boolean; title?: string; text?: string; rotate?: 90 | -90 | 180; crop?: { x: number; y: number; w: number; h: number } }[] };
 const memories: Memory[] = [
-  { title: "5 September 2026", text: "Ek din, itni saari memories… madam ji aur unke alag-alag moods 🖤", photos: [
+  { title: "5 September 2026 Urf Teachers Day", text: "Best Photo Of the day, itna acha time spend kia sath me bhot majedar din rha tha yeh", photos: [
     { src: m7.url, alt: "Together at the mall", big: true },
     { src: m6.url, alt: "With friends in the car" },
     { src: m8.url, alt: "At the food court" },
@@ -410,7 +410,7 @@ function Index() {
           </Section>
 
           <Section>
-            <h2 className="font-display text-5xl">Sweet Memories 🍨</h2>
+            <h2 className="font-display text-5xl">Some Of The Sweetest Memories 🍨</h2>
             <div className="mt-10 flex w-full max-w-6xl flex-col gap-6">
               {segments.map((seg, si) =>
                 "big" in seg ? (
