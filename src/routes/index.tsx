@@ -59,6 +59,7 @@ const scattered: { e?: string; w?: string; img?: string; t: string; l: string; r
 
 // Dates come from the uploaded filenames; undated photos stay separate.
 // crop: show only part of a photo, as fractions of the full image (x, y = top-left corner; w, h = size).
+//       For phone screenshots the photo area is auto-detected; these numbers are only the fallback.
 // rotate: use when a photo was saved sideways. 90 = clockwise, -90 = counter-clockwise, 180 = upside down.
 type Memory = { title: string; text: string; photos: { src: string; alt: string; rotate?: 90 | -90 | 180; crop?: { x: number; y: number; w: number; h: number } }[] };
 const memories: Memory[] = [
@@ -71,8 +72,8 @@ const memories: Memory[] = [
     { src: m11.url, alt: "Holding a sunflower" },
   ] },
   { title: "16 September 2026", text: "Topper ji aur company 🎓", photos: [{ src: m12.url, alt: "Friends together at a desk" }] },
-  { title: "29 August 2026", text: "Double cuteness, ek hi photo mein 💛", photos: [{ src: m13.url, alt: "With her little sister", crop: { x: 0.04, y: 0.315, w: 0.9, h: 0.265 } }] },
-  { title: "12 July 2026", text: "School wali memories 🖤", photos: [{ src: m4.url, alt: "Group photo in school uniforms", rotate: 90 }] },
+  { title: "29 August 2026", text: "Double cuteness, ek hi photo mein 💛", photos: [{ src: m13.url, alt: "With her little sister", crop: { x: 0.04, y: 0.377, w: 0.9, h: 0.222 } }] },
+  { title: "12 July 2026", text: "School wali memories 🖤", photos: [{ src: m4.url, alt: "Group photo in school uniforms", rotate: -90 }] },
   { title: "8 December 2025", text: "Ice cream is a food group for her. Dinner is optional. Ice cream isn't.", photos: [{ src: m2.url, alt: "Holding a chocolate ice cream" }] },
   { title: "28 January 2026", text: "Bachpan se hi favourite headache 😜", photos: [{ src: m3.url, alt: "Childhood photo on a phone screen" }] },
   { title: "31 July 2026", text: "Chhoti si photo, badi si cuteness 🐼", photos: [{ src: m5.url, alt: "Baby photo" }] },
@@ -92,17 +93,66 @@ function useColumns() {
   return n;
 }
 
-// Shows only a rectangle of a photo (e.g. trims black bars / phone UI off a screenshot).
-function CroppedImage({ src, alt, crop }: { src: string; alt: string; crop: { x: number; y: number; w: number; h: number } }) {
-  const [ratio, setRatio] = useState(0.53); // stored width / height
+type Crop = { x: number; y: number; w: number; h: number };
+
+// Finds the bright photo area inside a phone screenshot (skips black bars, Reply bar, nav buttons).
+// Returns fractions of the full image, or null if it can't tell.
+function findPhotoBox(img: HTMLImageElement): Crop | null {
+  const W = 120;
+  const H = Math.max(1, Math.round((W * img.naturalHeight) / img.naturalWidth));
+  const canvas = document.createElement("canvas");
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  if (!ctx) return null;
+  ctx.drawImage(img, 0, 0, W, H);
+  const d = ctx.getImageData(0, 0, W, H).data; // throws if the image is cross-origin
+  const lum = (x: number, y: number) => { const i = (y * W + x) * 4; return 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]; };
+  const xa = Math.round(W * 0.08), xb = Math.round(W * 0.92);
+  // longest run of bright rows (tolerating tiny gaps) = the photo band
+  let best: [number, number] | null = null, start = -1, last = -1;
+  const close = () => { if (start >= 0 && (!best || last - start > best[1] - best[0])) best = [start, last]; start = -1; };
+  for (let y = 0; y < H; y++) {
+    let sum = 0;
+    for (let x = xa; x < xb; x++) sum += lum(x, y);
+    if (sum / (xb - xa) > 60) { if (start < 0) start = y; last = y; }
+    else if (start >= 0 && y - last > 3) close();
+  }
+  close();
+  if (!best) return null;
+  const [y0, y1] = best as [number, number];
+  if (y1 - y0 < H * 0.08) return null;
+  // left / right edges of the photo inside that band
+  let x0 = -1, x1 = -1;
+  for (let x = 0; x < W; x++) {
+    let sum = 0;
+    for (let y = y0; y <= y1; y++) sum += lum(x, y);
+    if (sum / (y1 - y0 + 1) > 40) { if (x0 < 0) x0 = x; x1 = x; }
+  }
+  if (x0 < 0 || x1 - x0 < W * 0.3) return null;
+  // step 1 sample inside each edge so blurry borders never show
+  return { x: (x0 + 1) / W, y: (y0 + 1) / H, w: (x1 - x0 - 1) / W, h: (y1 - y0 - 1) / H };
+}
+
+// Shows only the photo part of a screenshot. Detects it automatically; `crop` is the fallback guess.
+function CroppedImage({ src, alt, crop }: { src: string; alt: string; crop: Crop }) {
+  const [ratio, setRatio] = useState(0.45); // stored width / height
+  const [box, setBox] = useState<Crop>(crop);
+  const [ready, setReady] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
-  const measure = (img: HTMLImageElement) => img.naturalWidth && setRatio(img.naturalWidth / img.naturalHeight);
+  const measure = (img: HTMLImageElement) => {
+    if (!img.naturalWidth) return;
+    setRatio(img.naturalWidth / img.naturalHeight);
+    try { const found = findPhotoBox(img); if (found) setBox(found); } catch { /* keep the fallback crop */ }
+    setReady(true);
+  };
   useEffect(() => { if (ref.current?.complete) measure(ref.current); }, []);
   return (
-    <div className="relative w-full overflow-hidden rounded-lg" style={{ aspectRatio: `${(crop.w / crop.h) * ratio}` }}>
+    <div className={`relative w-full overflow-hidden rounded-lg transition-opacity duration-300 ${ready ? "opacity-100" : "opacity-0"}`}
+      style={{ aspectRatio: `${(box.w / box.h) * ratio}` }}>
       <img ref={ref} src={src} alt={alt} onLoad={(e) => measure(e.currentTarget)}
         className="absolute block max-w-none"
-        style={{ width: `${100 / crop.w}%`, height: "auto", left: `${(-crop.x / crop.w) * 100}%`, top: `${(-crop.y / crop.h) * 100}%` }} />
+        style={{ width: `${100 / box.w}%`, height: "auto", left: `${(-box.x / box.w) * 100}%`, top: `${(-box.y / box.h) * 100}%` }} />
     </div>
   );
 }
