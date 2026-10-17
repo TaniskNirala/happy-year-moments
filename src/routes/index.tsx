@@ -79,7 +79,7 @@ const memories: Memory[] = [
   { title: "Computer Lab me hi baat hui thi hamari first time if you remember", text: "Pa Sharma ke gine chune ache kam. ", photos: [{ src: m12, alt: "Friends together at a desk" }] },
   { title: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", text: "yeh sharati hasiii itni pyari... 💛", photos: [{ src: m13, alt: "With her little sister", crop: { x: 0.04, y: 0.377, w: 0.9, h: 0.222 } }] },
   { title: "Few of the dayss khulke masti se sath me", text: "School wali memories 🖤", photos: [{ src: m4, alt: "Group photo in school uniforms", rotate: -90 }] },
-  { title: "The First Photo...", text: "Apkaa permanent (and yemssss mai boll rha is baaar firse mai bhi rahungaaa hamesaaa), sapne me ake chura lungaa", photos: [{ src: m2, alt: "Holding a chocolate ice cream" }] },
+  { title: "The First Photo...", text: "Apki permanent ice cream (and yemssss mai boll rha is baaar firse mai bhi rahungaaa hamesaaa...), sapne me ake chura lungaa", photos: [{ src: m2, alt: "Holding a chocolate ice cream" }] },
   { title: "Daarr kr rahooo mujheee", text: "Booooooo 👻👻👻 😜", photos: [{ src: m3, alt: "Childhood photo on a phone screen" }] },
   { title: "Cutenesss Over Loadedd....", text: "Sbse Cutee Smileee 🐼", photos: [{ src: m5, alt: "Baby photo" }] },
   { title: "Bechara Bhaii", text: "Don ke saamne toh haath jodne hi padenge 😌", photos: [{ src: m1, alt: "Together with hands folded in namaste" }] },
