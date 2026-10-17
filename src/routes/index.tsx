@@ -58,13 +58,14 @@ const scattered: { e?: string; w?: string; img?: string; t: string; l: string; r
 
 
 // Dates come from the uploaded filenames; undated photos stay separate.
+// big: show this photo larger (about 2/3 of the row) at the top of its day-group.
 // crop: show only part of a photo, as fractions of the full image (x, y = top-left corner; w, h = size).
 //       For phone screenshots the photo area is auto-detected; these numbers are only the fallback.
 // rotate: use when a photo was saved sideways. 90 = clockwise, -90 = counter-clockwise, 180 = upside down.
-type Memory = { title: string; text: string; photos: { src: string; alt: string; rotate?: 90 | -90 | 180; crop?: { x: number; y: number; w: number; h: number } }[] };
+type Memory = { title: string; text: string; photos: { src: string; alt: string; big?: boolean; rotate?: 90 | -90 | 180; crop?: { x: number; y: number; w: number; h: number } }[] };
 const memories: Memory[] = [
   { title: "5 September 2026", text: "Ek din, itni saari memories… madam ji aur unke alag-alag moods 🖤", photos: [
-    { src: m7.url, alt: "Together at the mall" },
+    { src: m7.url, alt: "Together at the mall", big: true },
     { src: m6.url, alt: "With friends in the car" },
     { src: m8.url, alt: "At the food court" },
     { src: m9.url, alt: "Arcade fun" },
@@ -197,17 +198,31 @@ function MemoryTile({ photo, memory, open, dimmed, onToggle }: {
 
 // All photos from one day: packed tightly together (small gap) in 1 or 2 lanes.
 function MemoryGroup({ memory, laneCount, openSrc, onToggle }: { memory: Memory; laneCount: number; openSrc: string | null; onToggle: (src: string) => void }) {
-  const lanes = Array.from({ length: laneCount }, (_, c) => memory.photos.filter((_, k) => k % laneCount === c));
+  const tile = (photo: Memory["photos"][number]) => (
+    <MemoryTile key={photo.src} photo={photo} memory={memory} open={openSrc === photo.src}
+      dimmed={openSrc !== null && openSrc !== photo.src} onToggle={() => onToggle(photo.src)} />
+  );
+  // A `big` photo (on wide screens) takes ~2/3 of the top row, with the next photo beside it.
+  const feature = laneCount > 1 ? memory.photos.find((ph) => ph.big) : undefined;
+  const others = memory.photos.filter((ph) => ph !== feature);
+  const side = feature ? others[0] : undefined;
+  const rest = feature ? others.slice(1) : others;
+  const lanes = Array.from({ length: laneCount }, (_, c) => rest.filter((_, k) => k % laneCount === c));
   return (
-    <div className="flex items-start gap-1.5">
-      {lanes.map((lane, c) => (
-        <div key={c} className="flex min-w-0 flex-1 flex-col gap-1.5">
-          {lane.map((photo) => (
-            <MemoryTile key={photo.src} photo={photo} memory={memory} open={openSrc === photo.src}
-              dimmed={openSrc !== null && openSrc !== photo.src} onToggle={() => onToggle(photo.src)} />
+    <div className="flex flex-col gap-1.5">
+      {feature && (
+        <div className="flex items-start gap-1.5">
+          <div className="min-w-0 flex-[2]">{tile(feature)}</div>
+          {side && <div className="min-w-0 flex-1">{tile(side)}</div>}
+        </div>
+      )}
+      {rest.length > 0 && (
+        <div className="flex items-start gap-1.5">
+          {lanes.map((lane, c) => (
+            <div key={c} className="flex min-w-0 flex-1 flex-col gap-1.5">{lane.map(tile)}</div>
           ))}
         </div>
-      ))}
+      )}
     </div>
   );
 }
