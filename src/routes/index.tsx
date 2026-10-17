@@ -196,8 +196,7 @@ function MemoryTile({ photo, memory, open, dimmed, onToggle }: {
 }
 
 // All photos from one day: packed tightly together (small gap) in 1 or 2 lanes.
-function MemoryGroup({ memory, openSrc, onToggle }: { memory: Memory; openSrc: string | null; onToggle: (src: string) => void }) {
-  const laneCount = memory.photos.length > 1 ? 2 : 1;
+function MemoryGroup({ memory, laneCount, openSrc, onToggle }: { memory: Memory; laneCount: number; openSrc: string | null; onToggle: (src: string) => void }) {
   const lanes = Array.from({ length: laneCount }, (_, c) => memory.photos.filter((_, k) => k % laneCount === c));
   return (
     <div className="flex items-start gap-1.5">
@@ -244,14 +243,20 @@ function Index() {
   const [mixerClicks, setMixerClicks] = useState(0);
   const [openSrc, setOpenSrc] = useState<string | null>(null);
   const cols = useColumns();
-  // Spread day-groups over the columns (shortest column first) so the wall stays balanced.
-  const columns: Memory[][] = Array.from({ length: cols }, () => []);
-  const heights: number[] = Array(cols).fill(0);
-  memories.forEach((m) => {
-    const c = heights.indexOf(Math.min(...heights));
-    columns[c].push(m);
-    heights[c] += m.photos.length > 1 ? Math.ceil(m.photos.length / 2) * 1.2 : 1.2;
-  });
+  // Multi-photo days get their own full-width block (bigger photos); single photos flow in balanced columns.
+  const BIG_LANES = cols === 1 ? 1 : 3; // photos per row inside a big day-group (phones: 1 = full width, set to 2 for smaller)
+  const spread = (list: Memory[]) => {
+    const out: Memory[][] = Array.from({ length: cols }, () => []);
+    const heights: number[] = Array(cols).fill(0);
+    list.forEach((m) => { const c = heights.indexOf(Math.min(...heights)); out[c].push(m); heights[c] += 1; });
+    return out;
+  };
+  const segments: ({ big: Memory } | { cols: Memory[][] })[] = [];
+  let batch: Memory[] = [];
+  const flush = () => { if (batch.length) segments.push({ cols: spread(batch) }); batch = []; };
+  memories.forEach((m) => { if (m.photos.length > 1) { flush(); segments.push({ big: m }); } else batch.push(m); });
+  flush();
+  const toggle = (src: string) => setOpenSrc((o) => (o === src ? null : src));
 
   const start = () => {
     setStarted(true);
@@ -308,14 +313,20 @@ function Index() {
 
           <Section>
             <h2 className="font-display text-5xl">Sweet Memories 🍨</h2>
-            <div className="mt-10 flex w-full max-w-6xl items-start gap-6">
-              {columns.map((col, c) => (
-                <div key={c} className="flex min-w-0 flex-1 flex-col gap-6">
-                  {col.map((m) => (
-                    <MemoryGroup key={m.title} memory={m} openSrc={openSrc} onToggle={(src) => setOpenSrc((o) => (o === src ? null : src))} />
-                  ))}
-                </div>
-              ))}
+            <div className="mt-10 flex w-full max-w-6xl flex-col gap-6">
+              {segments.map((seg, si) =>
+                "big" in seg ? (
+                  <MemoryGroup key={seg.big.title} memory={seg.big} laneCount={Math.min(BIG_LANES, seg.big.photos.length)} openSrc={openSrc} onToggle={toggle} />
+                ) : (
+                  <div key={si} className="flex items-start gap-6">
+                    {seg.cols.map((col, c) => (
+                      <div key={c} className="flex min-w-0 flex-1 flex-col gap-6">
+                        {col.map((m) => <MemoryGroup key={m.title} memory={m} laneCount={1} openSrc={openSrc} onToggle={toggle} />)}
+                      </div>
+                    ))}
+                  </div>
+                ),
+              )}
             </div>
 
             <div className="mt-16 max-w-md rounded-[var(--radius)] border bg-card p-6">
