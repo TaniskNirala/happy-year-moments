@@ -81,7 +81,7 @@ const memories: Memory[] = [
   { title: "Few of the dayss khulke masti se sath me", text: "School wali memories 🖤", photos: [{ src: m4.url, alt: "Group photo in school uniforms", rotate: -90 }] },
   { title: "The First Photo...", text: "Apkaa permanent (and yemssss mai boll rha is baaar firse mai bhi rahungaaa hamesaaa), sapne me ake chura lungaa", photos: [{ src: m2.url, alt: "Holding a chocolate ice cream" }] },
   { title: "Daarr kr rahooo mujheee", text: "Booooooo 👻👻👻 😜", photos: [{ src: m3.url, alt: "Childhood photo on a phone screen" }] },
-  { title: "Pyara Bachpan", text: "Sbse Cutee Smileee 🐼", photos: [{ src: m5.url, alt: "Baby photo" }] },
+  { title: "Cutenesss Over Loadedd....", text: "Sbse Cutee Smileee 🐼", photos: [{ src: m5.url, alt: "Baby photo" }] },
   { title: "Bechara Bhaii", text: "Don ke saamne toh haath jodne hi padenge 😌", photos: [{ src: m1.url, alt: "Together with hands folded in namaste" }] },
 ];
 
