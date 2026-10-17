@@ -197,7 +197,7 @@ function MemoryTile({ photo, memory, open, dimmed, onToggle }: {
 }
 
 // All photos from one day: packed tightly together (small gap) in 1 or 2 lanes.
-function MemoryGroup({ memory, laneCount, openSrc, onToggle }: { memory: Memory; laneCount: number; openSrc: string | null; onToggle: (src: string) => void }) {
+function MemoryGroup({ memory, laneCount, ratioOf, openSrc, onToggle }: { memory: Memory; laneCount: number; ratioOf: (src: string) => number; openSrc: string | null; onToggle: (src: string) => void }) {
   const tile = (photo: Memory["photos"][number]) => (
     <MemoryTile key={photo.src} photo={photo} memory={memory} open={openSrc === photo.src}
       dimmed={openSrc !== null && openSrc !== photo.src} onToggle={() => onToggle(photo.src)} />
@@ -207,7 +207,10 @@ function MemoryGroup({ memory, laneCount, openSrc, onToggle }: { memory: Memory;
   const others = memory.photos.filter((ph) => ph !== feature);
   const side = feature ? others[0] : undefined;
   const rest = feature ? others.slice(1) : others;
-  const lanes = Array.from({ length: laneCount }, (_, c) => rest.filter((_, k) => k % laneCount === c));
+  // Put each photo into the currently shortest lane so the block ends up even (no empty holes).
+  const lanes: Memory["photos"][] = Array.from({ length: laneCount }, () => []);
+  const laneH: number[] = Array(laneCount).fill(0);
+  rest.forEach((ph) => { const c = laneH.indexOf(Math.min(...laneH)); lanes[c].push(ph); laneH[c] += ratioOf(ph.src); });
   return (
     <div className="flex flex-col gap-1.5">
       {feature && (
@@ -258,12 +261,30 @@ function Index() {
   const [mixerClicks, setMixerClicks] = useState(0);
   const [openSrc, setOpenSrc] = useState<string | null>(null);
   const cols = useColumns();
+  // Real height/width of every photo, measured once so columns can be balanced by actual height.
+  const [ratios, setRatios] = useState<Record<string, number>>({});
+  useEffect(() => {
+    let alive = true;
+    memories.forEach((m) => m.photos.forEach((ph) => {
+      const img = new Image();
+      img.onload = () => {
+        if (!alive || !img.naturalWidth) return;
+        let r = img.naturalHeight / img.naturalWidth;
+        if (ph.rotate === 90 || ph.rotate === -90) r = 1 / r;
+        else if (ph.crop) r = (ph.crop.h / ph.crop.w) * r;
+        setRatios((o) => ({ ...o, [ph.src]: r }));
+      };
+      img.src = ph.src;
+    }));
+    return () => { alive = false; };
+  }, []);
+  const ratioOf = (src: string) => ratios[src] ?? 1.25;
   // Multi-photo days get their own full-width block (bigger photos); single photos flow in balanced columns.
   const BIG_LANES = cols === 1 ? 1 : 3; // photos per row inside a big day-group (phones: 1 = full width, set to 2 for smaller)
   const spread = (list: Memory[]) => {
     const out: Memory[][] = Array.from({ length: cols }, () => []);
     const heights: number[] = Array(cols).fill(0);
-    list.forEach((m) => { const c = heights.indexOf(Math.min(...heights)); out[c].push(m); heights[c] += 1; });
+    list.forEach((m) => { const c = heights.indexOf(Math.min(...heights)); out[c].push(m); heights[c] += m.photos.reduce((t, ph) => t + ratioOf(ph.src), 0) + 0.1; });
     return out;
   };
   const segments: ({ big: Memory } | { cols: Memory[][] })[] = [];
@@ -331,12 +352,12 @@ function Index() {
             <div className="mt-10 flex w-full max-w-6xl flex-col gap-6">
               {segments.map((seg, si) =>
                 "big" in seg ? (
-                  <MemoryGroup key={seg.big.title} memory={seg.big} laneCount={Math.min(BIG_LANES, seg.big.photos.length)} openSrc={openSrc} onToggle={toggle} />
+                  <MemoryGroup key={seg.big.title} memory={seg.big} laneCount={Math.min(BIG_LANES, seg.big.photos.length)} ratioOf={ratioOf} openSrc={openSrc} onToggle={toggle} />
                 ) : (
                   <div key={si} className="flex items-start gap-6">
                     {seg.cols.map((col, c) => (
                       <div key={c} className="flex min-w-0 flex-1 flex-col gap-6">
-                        {col.map((m) => <MemoryGroup key={m.title} memory={m} laneCount={1} openSrc={openSrc} onToggle={toggle} />)}
+                        {col.map((m) => <MemoryGroup key={m.title} memory={m} laneCount={1} ratioOf={ratioOf} openSrc={openSrc} onToggle={toggle} />)}
                       </div>
                     ))}
                   </div>
