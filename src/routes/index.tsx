@@ -8,6 +8,14 @@ import m3 from "@/assets/mem3.jpg.asset.json";
 import m4 from "@/assets/mem4.jpg.asset.json";
 import m5 from "@/assets/mem5.jpg.asset.json";
 import m6 from "@/assets/mem6.jpg.asset.json";
+import m7 from "@/assets/mem7.jpg.asset.json";
+import m8 from "@/assets/mem8.jpg.asset.json";
+import m9 from "@/assets/mem9.jpg.asset.json";
+import m10 from "@/assets/mem10.jpg.asset.json";
+import m11 from "@/assets/mem11.jpg.asset.json";
+import m12 from "@/assets/mem12.jpg.asset.json";
+import m13 from "@/assets/mem13.jpg.asset.json";
+import { Button } from "@/components/ui/button";
 import clipRasamalai from "@/assets/clip-rasamalai.png";
 import clipBooks from "@/assets/clip-books.png";
 import clipRuler from "@/assets/clip-ruler.png";
@@ -49,15 +57,24 @@ const scattered: { e?: string; w?: string; img?: string; t: string; l: string; r
 ];
 
 
-// Real photos are attached to each memory below
-type Memory = { e: string; title: string; text: string; img?: string };
+// Dates come from the uploaded filenames; undated photos stay separate.
+type Memory = { title: string; text: string; photos: { src: string; alt: string }[] };
 const memories: Memory[] = [
-  { e: "🍦", img: m1.url, title: "Ice cream > everything", text: "Ice cream is a food group for her. Dinner is optional. Ice cream isn't." },
-  { e: "😴", img: m2.url, title: "Professional sleeper", text: "Sleeps like it's an Olympic sport. Gold medal every year." },
-  { e: "🥞", img: m3.url, title: "Dosa devotion", text: "If dosa were a person, I'd honestly be scared of the competition." },
-  { e: "🌥️", img: m4.url, title: "Cloudy days", text: "Grey sky, cold breeze, and suddenly she's the happiest panda alive." },
-  { e: "🎓", img: m5.url, title: "Topper ji", text: "Says 'I didn't study at all' and then tops. Every. Single. Time." },
-  { e: "🖤", img: m6.url, title: "Black everything", text: "Wardrobe colour palette: black, black, and a little more black." },
+  { title: "5 September 2026", text: "Ek din, itni saari memories… madam ji aur unke alag-alag moods 🖤", photos: [
+    { src: m7.url, alt: "Together at the mall" },
+    { src: m6.url, alt: "With friends in the car" },
+    { src: m8.url, alt: "At the food court" },
+    { src: m9.url, alt: "Arcade fun" },
+    { src: m10.url, alt: "With the Spider-Man plush" },
+    { src: m11.url, alt: "Holding a sunflower" },
+  ] },
+  { title: "16 September 2026", text: "Topper ji aur company 🎓", photos: [{ src: m12.url, alt: "Friends together at a desk" }] },
+  { title: "29 August 2026", text: "Double cuteness, ek hi photo mein 💛", photos: [{ src: m13.url, alt: "With her little sister" }] },
+  { title: "12 July 2026", text: "School wali memories 🖤", photos: [{ src: m4.url, alt: "Group photo in school uniforms" }] },
+  { title: "8 December 2025", text: "Ice cream is a food group for her. Dinner is optional. Ice cream isn't.", photos: [{ src: m2.url, alt: "Holding a chocolate ice cream" }] },
+  { title: "28 January 2026", text: "Bachpan se hi favourite headache 😜", photos: [{ src: m3.url, alt: "Childhood photo on a phone screen" }] },
+  { title: "31 July 2026", text: "Chhoti si photo, badi si cuteness 🐼", photos: [{ src: m5.url, alt: "Baby photo" }] },
+  { title: "Hum dono", text: "Madam ji ke saamne toh haath jodne hi padenge 😌", photos: [{ src: m1.url, alt: "Together with hands folded in namaste" }] },
 ];
 
 
@@ -147,32 +164,26 @@ function Index() {
 
           <Section>
             <h2 className="font-display text-5xl">Sweet Memories 🍨</h2>
-            <p className="mt-2 text-muted-foreground">Tap a photo... something slides up 👆</p>
-            <div className="mt-10 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-10 grid w-full max-w-5xl grid-cols-1 items-start gap-6 sm:grid-cols-2">
               {memories.map((m, i) => (
-                <button key={i} type="button" aria-expanded={openMem === i}
+                <Button key={m.title} type="button" variant="ghost" aria-label={`Show memory: ${m.title}`} aria-expanded={openMem === i}
                   onClick={() => setOpenMem((o) => (o === i ? null : i))}
-                  className="relative w-full cursor-pointer self-start overflow-hidden rounded-md bg-foreground p-3 pb-4 text-left text-primary-foreground shadow-2xl"
-                  style={{ transform: `rotate(${i % 2 ? 2 : -2}deg)` }}>
-                  <div className="relative">
-                    {m.img ? (
-                      <img src={m.img} alt={m.title} loading="lazy" className="h-64 w-full rounded object-cover" />
-                    ) : (
-                      <div className="flex h-64 items-center justify-center rounded bg-muted text-7xl">{m.e}</div>
-                    )}
-                    {openMem !== i && (
-                      <span className="absolute right-2 top-2 rounded-full bg-background/70 px-3 py-1 text-xs font-bold text-foreground">tap 👆</span>
-                    )}
+                  className={`block h-auto w-full overflow-hidden whitespace-normal rounded-md bg-foreground p-2 text-left text-primary-foreground hover:bg-foreground hover:text-primary-foreground ${m.photos.length > 1 ? "sm:col-span-2" : ""}`}>
+                  <div className={m.photos.length > 1 ? "grid grid-cols-2 gap-2 sm:grid-cols-3" : "grid grid-cols-1"}>
+                    {m.photos.map((photo) => (
+                      <img key={photo.src} src={photo.src} alt={photo.alt} loading="lazy"
+                        className="aspect-[4/5] w-full rounded-sm object-cover" />
+                    ))}
                   </div>
-                  <div className={`grid transition-all duration-500 ease-out ${openMem === i ? "mt-3 grid-rows-[1fr] opacity-100" : "mt-0 grid-rows-[0fr] opacity-0"}`}>
+                  <div aria-hidden={openMem !== i} className={`grid transition-all duration-500 ease-out motion-reduce:transition-none ${openMem === i ? "mt-3 grid-rows-[1fr] opacity-100" : "mt-0 grid-rows-[0fr] opacity-0"}`}>
                     <div className="min-h-0 overflow-hidden">
-                      <div className={`border-t pt-3 transition-transform duration-500 ease-out ${openMem === i ? "translate-y-0" : "translate-y-full"}`}>
+                      <div className={`border-t px-2 pb-2 pt-3 transition-transform duration-500 ease-out motion-reduce:transition-none ${openMem === i ? "translate-y-0" : "translate-y-full"}`}>
                         <h3 className="font-display text-2xl">{m.title}</h3>
                         <p className="mt-1 text-sm">{m.text}</p>
                       </div>
                     </div>
                   </div>
-                </button>
+                </Button>
               ))}
             </div>
 

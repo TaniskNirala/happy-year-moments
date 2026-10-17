@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Memory groups use explicit photo arrays in the index route, with dates taken from original upload filenames; this keeps undated photos separate and allows each group to reveal one caption below its collage.

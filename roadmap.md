@@ -5,4 +5,5 @@
 - [x] Memory cards now show a real photo when one is supplied, emoji only as fallback
 - [x] Drop the user's own photos into the Sweet Memories cards (waiting on their uploads)
 - [x] Clipart of rasamalai, books and a smiley ruler floating in the background (3 of each, transparent PNGs)
-- [ ] Add the 7 later photos (mem7–mem13) as more Sweet Memories cards and give the uploaded video (memory.mp4) its own spot — blocked: credits ran out before this could be done
+- [x] Include all 13 photos in aligned memory groups, combining photos with matching upload-filename dates into collages; reveal captions below on click.
+- [ ] Give the uploaded video (memory.mp4) its own spot — deferred: this request is for photo collages only.
