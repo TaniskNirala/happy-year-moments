@@ -440,7 +440,7 @@ function Index() {
           </Section>
 
           <Section>
-            <h2 className="font-display text-5xl">Your 1 Year Review 📝</h2>
+            <h2 className="font-display text-5xl">My 1 Year Review 📝</h2>
             <p className="mt-2 text-muted-foreground">Very official. Topper-level exam. No cheating.</p>
             <div className="mt-8 w-full max-w-lg space-y-6 rounded-[var(--radius)] border bg-card p-8">
               {questions.map((q, i) => (
