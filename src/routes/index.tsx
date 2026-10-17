@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import panda from "@/assets/panda.png";
 import mixer from "@/assets/mixer.png";
 import m1 from "@/assets/mem1.jpg.asset.json";
@@ -16,7 +16,6 @@ import m11 from "@/assets/mem11.jpg.asset.json";
 import m12 from "@/assets/mem12.jpg.asset.json";
 import m13 from "@/assets/mem13.jpg.asset.json";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import clipRasamalai from "@/assets/clip-rasamalai.png";
 import clipBooks from "@/assets/clip-books.png";
 import clipRuler from "@/assets/clip-ruler.png";
@@ -79,10 +78,56 @@ const memories: Memory[] = [
 ];
 
 
-// Flatten memory groups into one photo wall; each photo keeps its group's date + caption for the lightbox.
-const gallery = memories.flatMap((m) => m.photos.map((photo) => ({ ...photo, title: m.title, text: m.text })));
-// Cycled aspect ratios give the masonry wall its mixed-size look.
-const tileAspects = ["aspect-[4/5]", "aspect-square", "aspect-[3/4]", "aspect-[4/3]", "aspect-[4/5]", "aspect-[5/6]"];
+// Picks how many outer columns of memory groups fit the screen (1 / 2 / 3).
+function useColumns() {
+  const [n, setN] = useState(2);
+  useEffect(() => {
+    const calc = () => setN(window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1);
+    calc();
+    window.addEventListener("resize", calc);
+    return () => window.removeEventListener("resize", calc);
+  }, []);
+  return n;
+}
+
+// One photo shown in full (never cropped). Tapping it slides its caption open underneath.
+function MemoryTile({ photo, memory, open, dimmed, onToggle }: {
+  photo: Memory["photos"][number]; memory: Memory; open: boolean; dimmed: boolean; onToggle: () => void;
+}) {
+  return (
+    <div className={`overflow-hidden rounded-xl bg-foreground p-1.5 text-primary-foreground shadow-lg transition-all duration-500 ease-out motion-reduce:transition-none ${dimmed ? "scale-[0.97] opacity-70" : ""}`}>
+      <button type="button" aria-expanded={open} aria-label={`Show memory: ${memory.title}`} onClick={onToggle} className="block w-full">
+        <img src={photo.src} alt={photo.alt} loading="lazy" className="block h-auto w-full rounded-lg" />
+      </button>
+      <div aria-hidden={!open} className={`grid transition-all duration-500 ease-out motion-reduce:transition-none ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+        <div className="min-h-0 overflow-hidden">
+          <div className="px-2 pb-2 pt-3 text-left">
+            <h3 className="font-display text-xl">{memory.title}</h3>
+            <p className="mt-1 text-sm">{memory.text}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// All photos from one day: packed tightly together (small gap) in 1 or 2 lanes.
+function MemoryGroup({ memory, openSrc, onToggle }: { memory: Memory; openSrc: string | null; onToggle: (src: string) => void }) {
+  const laneCount = memory.photos.length > 1 ? 2 : 1;
+  const lanes = Array.from({ length: laneCount }, (_, c) => memory.photos.filter((_, k) => k % laneCount === c));
+  return (
+    <div className="flex items-start gap-1.5">
+      {lanes.map((lane, c) => (
+        <div key={c} className="flex min-w-0 flex-1 flex-col gap-1.5">
+          {lane.map((photo) => (
+            <MemoryTile key={photo.src} photo={photo} memory={memory} open={openSrc === photo.src}
+              dimmed={openSrc !== null && openSrc !== photo.src} onToggle={() => onToggle(photo.src)} />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const questions = [
   "How much did you enjoy being tanged this year?",
@@ -113,8 +158,16 @@ function Index() {
   const [tries, setTries] = useState(0);
   const [note, setNote] = useState("");
   const [mixerClicks, setMixerClicks] = useState(0);
-  const [lightbox, setLightbox] = useState<number | null>(null);
-  const step = (d: number) => setLightbox((i) => (i === null ? i : (i + d + gallery.length) % gallery.length));
+  const [openSrc, setOpenSrc] = useState<string | null>(null);
+  const cols = useColumns();
+  // Spread day-groups over the columns (shortest column first) so the wall stays balanced.
+  const columns: Memory[][] = Array.from({ length: cols }, () => []);
+  const heights: number[] = Array(cols).fill(0);
+  memories.forEach((m) => {
+    const c = heights.indexOf(Math.min(...heights));
+    columns[c].push(m);
+    heights[c] += m.photos.length > 1 ? Math.ceil(m.photos.length / 2) * 1.2 : 1.2;
+  });
 
   const start = () => {
     setStarted(true);
@@ -171,38 +224,15 @@ function Index() {
 
           <Section>
             <h2 className="font-display text-5xl">Sweet Memories 🍨</h2>
-            <div className="mt-10 w-full max-w-5xl columns-2 gap-3 sm:columns-3 lg:columns-4">
-              {gallery.map((g, i) => (
-                <button key={g.src} type="button" aria-label={`Open memory: ${g.title}`} onClick={() => setLightbox(i)}
-                  className="group relative mb-3 block w-full break-inside-avoid overflow-hidden rounded-md bg-foreground p-1.5 shadow-lg transition-transform duration-300 hover:-translate-y-1 hover:rotate-[0.5deg] focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary motion-reduce:transition-none">
-                  <img src={g.src} alt={g.alt} loading="lazy" className={`${tileAspects[i % tileAspects.length]} w-full rounded-sm object-cover`} />
-                  <span className="pointer-events-none absolute inset-x-1.5 bottom-1.5 rounded-b-sm bg-gradient-to-t from-black/70 to-transparent px-2 pb-1.5 pt-6 text-left text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-                    {g.title}
-                  </span>
-                </button>
+            <div className="mt-10 flex w-full max-w-6xl items-start gap-6">
+              {columns.map((col, c) => (
+                <div key={c} className="flex min-w-0 flex-1 flex-col gap-6">
+                  {col.map((m) => (
+                    <MemoryGroup key={m.title} memory={m} openSrc={openSrc} onToggle={(src) => setOpenSrc((o) => (o === src ? null : src))} />
+                  ))}
+                </div>
               ))}
             </div>
-
-            <Dialog open={lightbox !== null} onOpenChange={(o) => !o && setLightbox(null)}>
-              <DialogContent className="max-w-3xl border-0 bg-foreground p-3 text-primary-foreground"
-                onKeyDown={(e) => { if (e.key === "ArrowRight") step(1); if (e.key === "ArrowLeft") step(-1); }}>
-                {lightbox !== null && (
-                  <div className="flex flex-col gap-3">
-                    <div className="relative">
-                      <img src={gallery[lightbox].src} alt={gallery[lightbox].alt} className="max-h-[70vh] w-full rounded-sm object-contain" />
-                      <button type="button" aria-label="Previous photo" onClick={() => step(-1)}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 px-3 py-2 text-2xl text-white hover:bg-black/70">‹</button>
-                      <button type="button" aria-label="Next photo" onClick={() => step(1)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 px-3 py-2 text-2xl text-white hover:bg-black/70">›</button>
-                    </div>
-                    <div className="px-2 pb-2 text-left">
-                      <DialogTitle className="font-display text-2xl">{gallery[lightbox].title}</DialogTitle>
-                      <DialogDescription className="mt-1 text-sm text-primary-foreground/80">{gallery[lightbox].text}</DialogDescription>
-                    </div>
-                  </div>
-                )}
-              </DialogContent>
-            </Dialog>
 
             <div className="mt-16 max-w-md rounded-[var(--radius)] border bg-card p-6">
               <img src={mixer} alt="Evil mixer" width={816} height={816} loading="lazy"
