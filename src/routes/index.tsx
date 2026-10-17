@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import panda from "@/assets/panda.png";
 import mixer from "@/assets/mixer.png";
 import m1 from "@/assets/mem1.jpg.asset.json";
@@ -58,7 +58,9 @@ const scattered: { e?: string; w?: string; img?: string; t: string; l: string; r
 
 
 // Dates come from the uploaded filenames; undated photos stay separate.
-type Memory = { title: string; text: string; photos: { src: string; alt: string }[] };
+// crop: show only part of a photo, as fractions of the full image (x, y = top-left corner; w, h = size).
+// rotate: use when a photo was saved sideways. 90 = clockwise, -90 = counter-clockwise, 180 = upside down.
+type Memory = { title: string; text: string; photos: { src: string; alt: string; rotate?: 90 | -90 | 180; crop?: { x: number; y: number; w: number; h: number } }[] };
 const memories: Memory[] = [
   { title: "5 September 2026", text: "Ek din, itni saari memories… madam ji aur unke alag-alag moods 🖤", photos: [
     { src: m7.url, alt: "Together at the mall" },
@@ -69,8 +71,8 @@ const memories: Memory[] = [
     { src: m11.url, alt: "Holding a sunflower" },
   ] },
   { title: "16 September 2026", text: "Topper ji aur company 🎓", photos: [{ src: m12.url, alt: "Friends together at a desk" }] },
-  { title: "29 August 2026", text: "Double cuteness, ek hi photo mein 💛", photos: [{ src: m13.url, alt: "With her little sister" }] },
-  { title: "12 July 2026", text: "School wali memories 🖤", photos: [{ src: m4.url, alt: "Group photo in school uniforms" }] },
+  { title: "29 August 2026", text: "Double cuteness, ek hi photo mein 💛", photos: [{ src: m13.url, alt: "With her little sister", crop: { x: 0.04, y: 0.315, w: 0.9, h: 0.265 } }] },
+  { title: "12 July 2026", text: "School wali memories 🖤", photos: [{ src: m4.url, alt: "Group photo in school uniforms", rotate: 90 }] },
   { title: "8 December 2025", text: "Ice cream is a food group for her. Dinner is optional. Ice cream isn't.", photos: [{ src: m2.url, alt: "Holding a chocolate ice cream" }] },
   { title: "28 January 2026", text: "Bachpan se hi favourite headache 😜", photos: [{ src: m3.url, alt: "Childhood photo on a phone screen" }] },
   { title: "31 July 2026", text: "Chhoti si photo, badi si cuteness 🐼", photos: [{ src: m5.url, alt: "Baby photo" }] },
@@ -90,6 +92,38 @@ function useColumns() {
   return n;
 }
 
+// Shows only a rectangle of a photo (e.g. trims black bars / phone UI off a screenshot).
+function CroppedImage({ src, alt, crop }: { src: string; alt: string; crop: { x: number; y: number; w: number; h: number } }) {
+  const [ratio, setRatio] = useState(0.53); // stored width / height
+  const ref = useRef<HTMLImageElement>(null);
+  const measure = (img: HTMLImageElement) => img.naturalWidth && setRatio(img.naturalWidth / img.naturalHeight);
+  useEffect(() => { if (ref.current?.complete) measure(ref.current); }, []);
+  return (
+    <div className="relative w-full overflow-hidden rounded-lg" style={{ aspectRatio: `${(crop.w / crop.h) * ratio}` }}>
+      <img ref={ref} src={src} alt={alt} onLoad={(e) => measure(e.currentTarget)}
+        className="absolute block max-w-none"
+        style={{ width: `${100 / crop.w}%`, height: "auto", left: `${(-crop.x / crop.w) * 100}%`, top: `${(-crop.y / crop.h) * 100}%` }} />
+    </div>
+  );
+}
+
+// Shows a sideways-saved photo upright, still at its full uncropped size.
+function RotatedImage({ src, alt, deg }: { src: string; alt: string; deg: number }) {
+  const [ratio, setRatio] = useState(0.75); // stored width / height
+  const ref = useRef<HTMLImageElement>(null);
+  const measure = (img: HTMLImageElement) => img.naturalWidth && setRatio(img.naturalWidth / img.naturalHeight);
+  useEffect(() => { if (ref.current?.complete) measure(ref.current); }, []);
+  const quarter = deg === 90 || deg === -90;
+  if (!quarter) return <img src={src} alt={alt} loading="lazy" className="block h-auto w-full rounded-lg" style={{ transform: `rotate(${deg}deg)` }} />;
+  return (
+    <div className="relative w-full overflow-hidden rounded-lg" style={{ aspectRatio: `${1 / ratio}` }}>
+      <img ref={ref} src={src} alt={alt} onLoad={(e) => measure(e.currentTarget)}
+        className="absolute left-1/2 top-1/2 block max-w-none"
+        style={{ width: `${ratio * 100}%`, height: "auto", transform: `translate(-50%, -50%) rotate(${deg}deg)` }} />
+    </div>
+  );
+}
+
 // One photo shown in full (never cropped). Tapping it slides its caption open underneath.
 function MemoryTile({ photo, memory, open, dimmed, onToggle }: {
   photo: Memory["photos"][number]; memory: Memory; open: boolean; dimmed: boolean; onToggle: () => void;
@@ -97,7 +131,7 @@ function MemoryTile({ photo, memory, open, dimmed, onToggle }: {
   return (
     <div className={`overflow-hidden rounded-xl bg-foreground p-1.5 text-primary-foreground shadow-lg transition-all duration-500 ease-out motion-reduce:transition-none ${dimmed ? "scale-[0.97] opacity-70" : ""}`}>
       <button type="button" aria-expanded={open} aria-label={`Show memory: ${memory.title}`} onClick={onToggle} className="block w-full">
-        <img src={photo.src} alt={photo.alt} loading="lazy" className="block h-auto w-full rounded-lg" />
+        {photo.crop ? <CroppedImage src={photo.src} alt={photo.alt} crop={photo.crop} /> : photo.rotate ? <RotatedImage src={photo.src} alt={photo.alt} deg={photo.rotate} /> : <img src={photo.src} alt={photo.alt} loading="lazy" className="block h-auto w-full rounded-lg" />}
       </button>
       <div aria-hidden={!open} className={`grid transition-all duration-500 ease-out motion-reduce:transition-none ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
         <div className="min-h-0 overflow-hidden">
