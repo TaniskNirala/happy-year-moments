@@ -8,6 +8,9 @@ import m3 from "@/assets/mem3.jpg.asset.json";
 import m4 from "@/assets/mem4.jpg.asset.json";
 import m5 from "@/assets/mem5.jpg.asset.json";
 import m6 from "@/assets/mem6.jpg.asset.json";
+import clipRasamalai from "@/assets/clip-rasamalai.png";
+import clipBooks from "@/assets/clip-books.png";
+import clipRuler from "@/assets/clip-ruler.png";
 
 
 export const Route = createFileRoute("/")({
@@ -29,7 +32,7 @@ export const Route = createFileRoute("/")({
 });
 
 // Background scattered "photos" — replace emojis with real photos anytime
-const scattered: { e?: string; w?: string; t: string; l: string; r: string }[] = [
+const scattered: { e?: string; w?: string; img?: string; t: string; l: string; r: string }[] = [
   { e: "🐼", t: "8%", l: "6%", r: "-8deg" }, { e: "🍦", t: "15%", l: "82%", r: "10deg" },
   { e: "😴", t: "42%", l: "3%", r: "6deg" }, { e: "🥞", t: "60%", l: "88%", r: "-6deg" },
   { e: "☁️", t: "78%", l: "10%", r: "-4deg" }, { e: "🍨", t: "88%", l: "70%", r: "8deg" },
@@ -40,6 +43,12 @@ const scattered: { e?: string; w?: string; t: string; l: string; r: string }[] =
   { w: "ramalaii", t: "12%", l: "55%", r: "-6deg" }, { w: "ramalaii", t: "45%", l: "8%", r: "5deg" },
   { w: "ramalaii", t: "72%", l: "80%", r: "-4deg" }, { w: "ramalaii", t: "85%", l: "42%", r: "7deg" },
   { w: "ramalaii", t: "28%", l: "78%", r: "-8deg" },
+  { img: clipRasamalai, t: "10%", l: "22%", r: "-10deg" }, { img: clipRasamalai, t: "52%", l: "88%", r: "8deg" },
+  { img: clipRasamalai, t: "95%", l: "12%", r: "6deg" },
+  { img: clipBooks, t: "38%", l: "70%", r: "8deg" }, { img: clipBooks, t: "88%", l: "55%", r: "-6deg" },
+  { img: clipBooks, t: "5%", l: "92%", r: "12deg" },
+  { img: clipRuler, t: "58%", l: "20%", r: "-14deg" }, { img: clipRuler, t: "25%", l: "48%", r: "12deg" },
+  { img: clipRuler, t: "75%", l: "32%", r: "-8deg" },
 ];
 
 
@@ -95,9 +104,9 @@ function Index() {
       {/* scattered background polaroids */}
       <div className="pointer-events-none fixed inset-0 z-0">
         {scattered.map((s, i) => (
-          <div key={i} className={s.w ? "floaty absolute font-display opacity-20" : "floaty absolute rounded-md bg-foreground p-2 pb-6 opacity-20 shadow-xl"}
+          <div key={i} className={s.w ? "floaty absolute font-display opacity-20" : s.img ? "floaty absolute" : "floaty absolute rounded-md bg-foreground p-2 pb-6 opacity-20 shadow-xl"}
             style={{ top: s.t, left: s.l, ["--r" as string]: s.r, animationDelay: `${i * 0.7}s`, fontSize: s.w ? "2.2rem" : undefined, color: s.w ? "var(--primary)" : undefined }}>
-            {s.w ? s.w : <div className="flex h-20 w-20 items-center justify-center bg-muted text-5xl">{s.e}</div>}
+            {s.w ? s.w : s.img ? <img src={s.img} alt="" loading="lazy" width={816} height={816} className="w-24 opacity-25" /> : <div className="flex h-20 w-20 items-center justify-center bg-muted text-5xl">{s.e}</div>}
           </div>
         ))}
         <div className="drift absolute top-[12%] text-7xl opacity-30">☁️</div>
