@@ -152,19 +152,25 @@ function Index() {
               {memories.map((m, i) => (
                 <button key={i} type="button" aria-expanded={openMem === i}
                   onClick={() => setOpenMem((o) => (o === i ? null : i))}
-                  className="relative cursor-pointer overflow-hidden rounded-md bg-foreground p-3 pb-5 text-left text-primary-foreground shadow-2xl"
+                  className="relative w-full cursor-pointer self-start overflow-hidden rounded-md bg-foreground p-3 pb-4 text-left text-primary-foreground shadow-2xl"
                   style={{ transform: `rotate(${i % 2 ? 2 : -2}deg)` }}>
-                  {m.img ? (
-                    <img src={m.img} alt={m.title} loading="lazy" className="h-64 w-full rounded object-cover" />
-                  ) : (
-                    <div className="flex h-64 items-center justify-center rounded bg-muted text-7xl">{m.e}</div>
-                  )}
-                  {openMem !== i && (
-                    <span className="absolute right-5 top-5 rounded-full bg-background/70 px-3 py-1 text-xs font-bold text-foreground">tap 👆</span>
-                  )}
-                  <div className={`absolute inset-x-3 bottom-5 rounded-t-md border-t bg-foreground p-4 transition-transform duration-500 ease-out ${openMem === i ? "translate-y-0" : "translate-y-[calc(100%+1.5rem)]"}`}>
-                    <h3 className="font-display text-2xl">{m.title}</h3>
-                    <p className="mt-1 text-sm">{m.text}</p>
+                  <div className="relative">
+                    {m.img ? (
+                      <img src={m.img} alt={m.title} loading="lazy" className="h-64 w-full rounded object-cover" />
+                    ) : (
+                      <div className="flex h-64 items-center justify-center rounded bg-muted text-7xl">{m.e}</div>
+                    )}
+                    {openMem !== i && (
+                      <span className="absolute right-2 top-2 rounded-full bg-background/70 px-3 py-1 text-xs font-bold text-foreground">tap 👆</span>
+                    )}
+                  </div>
+                  <div className={`grid transition-all duration-500 ease-out ${openMem === i ? "mt-3 grid-rows-[1fr] opacity-100" : "mt-0 grid-rows-[0fr] opacity-0"}`}>
+                    <div className="min-h-0 overflow-hidden">
+                      <div className={`border-t pt-3 transition-transform duration-500 ease-out ${openMem === i ? "translate-y-0" : "translate-y-full"}`}>
+                        <h3 className="font-display text-2xl">{m.title}</h3>
+                        <p className="mt-1 text-sm">{m.text}</p>
+                      </div>
+                    </div>
                   </div>
                 </button>
               ))}
