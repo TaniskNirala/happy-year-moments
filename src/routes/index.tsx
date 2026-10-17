@@ -68,21 +68,21 @@ const scattered: { e?: string; w?: string; img?: string; t: string; l: string; r
 type Memory = { title: string; text: string; photos: { src: string; alt: string; big?: boolean; wide?: boolean; title?: string; text?: string; rotate?: 90 | -90 | 180; crop?: { x: number; y: number; w: number; h: number } }[] };
 const memories: Memory[] = [
   { title: "5 September 2026 Urf Teachers Day", text: "Best Photo Of the day, itna acha time spend kia sath me bhot majedar din rha tha yeh", photos: [
-    { src: m7.url, alt: "Together at the mall", big: true, title: "5 September 2026", text: "Mall mein hum dono, topper ji ke saath selfie 📸" },
-    { src: m6.url, alt: "With friends in the car", title: "5 September 2026", text: "Peace sign wali ride ✌️ company achi thi" },
-    { src: m8.url, alt: "At the food court", title: "5 September 2026", text: "Food court, kyunki khana is a must 🍟" },
-    { src: m9.url, alt: "Arcade fun", title: "5 September 2026", text: "Arcade mein topper ji ka gun-wala avatar 🔫" },
-    { src: m10.url, alt: "With the Spider-Man plush", title: "5 September 2026", text: "Spider-Man ke saath dosti 🕷️" },
-    { src: m11.url, alt: "Holding a sunflower", title: "5 September 2026", text: "Sunflower aur ek pyaari si smile 🌻" },
-    { src: m14, alt: "Two school captains in sashes", wide: true, title: "27 August 2026", text: "School ke captains 🎖️" },
+    { src: m7.url, alt: "Together at the mall", big: true, title: "Best Photo Of the day", text: "Itna acha time spend kia sath me bhot majedar din rha tha yeh" },
+    { src: m6.url, alt: "With friends in the car", title: "Barshh was the best addition", text: "Mummy yeh don mujhe bully krti hai..." },
+    { src: m8.url, alt: "At the food court", title: "Ankh marti hui badmoshhh", text: "Fir khud ko madam masum kehti hai.Photos khichni ni ati madam but memores capture krni ati haii" },
+    { src: m9.url, alt: "Arcade fun", title: "Don Asli roop me" text: " Pure Vegitarian non veg kam krne ke bad, isi gun se mujhe mardooo donn..." },
+    { src: m10.url, alt: "With the Spider-Man plush", title: "Hayeee yeh katilana judaaaa.....", text: "killing me sincee, pehli baar toh scl ke gate pr dekha tha..." },
+    { src: m11.url, alt: "Holding a sunflower", title: "sunflower With A Real Flowerr..", text: "Jindgi me pehli baar kisi ke liye phool kharide the... , sorry vo khrab and single dene ke liye.🌻" },
+    { src: m14, alt: "Two school captains in sashes", wide: true, title: "Bna hi diya apne head boyy 👻👻", text: "Yha jb apne bulaya photo ke liye tbhi mujhme himaat ai as mai toh genuinly ni puch pata us din bhi photo ke liye thannkkkk youuuuuu" },
   ] },
-  { title: "16 September 2026", text: "Topper ji aur company 🎓", photos: [{ src: m12.url, alt: "Friends together at a desk" }] },
-  { title: "29 August 2026", text: "Double cuteness, ek hi photo mein 💛", photos: [{ src: m13.url, alt: "With her little sister", crop: { x: 0.04, y: 0.377, w: 0.9, h: 0.222 } }] },
-  { title: "12 July 2026", text: "School wali memories 🖤", photos: [{ src: m4.url, alt: "Group photo in school uniforms", rotate: -90 }] },
-  { title: "8 December 2025", text: "Ice cream is a food group for her. Dinner is optional. Ice cream isn't.", photos: [{ src: m2.url, alt: "Holding a chocolate ice cream" }] },
-  { title: "28 January 2026", text: "Bachpan se hi favourite headache 😜", photos: [{ src: m3.url, alt: "Childhood photo on a phone screen" }] },
-  { title: "31 July 2026", text: "Chhoti si photo, badi si cuteness 🐼", photos: [{ src: m5.url, alt: "Baby photo" }] },
-  { title: "Hum dono", text: "Madam ji ke saamne toh haath jodne hi padenge 😌", photos: [{ src: m1.url, alt: "Together with hands folded in namaste" }] },
+  { title: "Computer Lab me hi baat hui thi hamari first time if you remember", text: "Pa Sharma ke gine chune ache kam. ", photos: [{ src: m12.url, alt: "Friends together at a desk" }] },
+  { title: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", text: "yeh sharati hasiii itni pyari... 💛", photos: [{ src: m13.url, alt: "With her little sister", crop: { x: 0.04, y: 0.377, w: 0.9, h: 0.222 } }] },
+  { title: "Few of the dayss khulke masti se sath me", text: "School wali memories 🖤", photos: [{ src: m4.url, alt: "Group photo in school uniforms", rotate: -90 }] },
+  { title: "The First Photo...", text: "Apkaa permanent (and yemssss mai boll rha is baaar firse mai bhi rahungaaa hamesaaa), sapne me ake chura lungaa", photos: [{ src: m2.url, alt: "Holding a chocolate ice cream" }] },
+  { title: "Daarr kr rahooo mujheee", text: "Booooooo 👻👻👻 😜", photos: [{ src: m3.url, alt: "Childhood photo on a phone screen" }] },
+  { title: "Pyara Bachpan", text: "Sbse Cutee Smileee 🐼", photos: [{ src: m5.url, alt: "Baby photo" }] },
+  { title: "Bechara Bhaii", text: "Don ke saamne toh haath jodne hi padenge 😌", photos: [{ src: m1.url, alt: "Together with hands folded in namaste" }] },
 ];
 
 
