@@ -90,6 +90,7 @@ function Index() {
   const [tries, setTries] = useState(0);
   const [note, setNote] = useState("");
   const [mixerClicks, setMixerClicks] = useState(0);
+  const [openMem, setOpenMem] = useState<number | null>(null);
 
   const start = () => {
     setStarted(true);
