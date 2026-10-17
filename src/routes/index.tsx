@@ -25,9 +25,9 @@ import clipRuler from "@/assets/clip-ruler.png";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Happy 1 Year of Tanging You, Topper!" },
+      { title: "Sar Par Eyes 🥳🥳🥳🥳🥳" },
       { name: "description", content: "One year of friendship, pandas, ice creams and war against the mixer." },
-      { property: "og:title", content: "Happy 1 Year of Tanging You, Topper!" },
+      { property: "og:title", content: "Sar Par Eyes 🥳🥳🥳🥳🥳" },
       { property: "og:description", content: "One year of friendship, pandas, ice creams and war against the mixer." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
