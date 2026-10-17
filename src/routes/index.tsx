@@ -135,11 +135,11 @@ function Index() {
             <div id="msg" className="max-w-2xl rounded-[var(--radius)] border bg-card p-8 backdrop-blur md:p-12">
               <h2 className="font-display text-4xl text-accent">A small message 🐼</h2>
               <p className="mt-6 text-lg leading-relaxed">
-                Pta Ni Na madam Ji kaise ek sal nikal gya apko pareshan krte kre bhot dimag khaya apka bhot chidhya faltu ki tesnion di and mostly dukhhi bhi bhot kra.
-                <br />
-                kha se socha tha kabhi ki kha se baat shuru hui thi hamari kaise and kha pr pahuch gye hai apko parehsan krte krte
-                <br />
-                i gues kai chije bhi dekhi hai weeks tk koi baat na hone se leke ek hi din me 7-8 ghnte baat ho jana, hamara pintrest and pins ke through maje krna, mera line marna 😜😜
+                Pata hi nahi chala, madam, ji, kaise ek saal nikal gaya! Aapko pareshan karte-karte bahut dimaag khaya aapka, bahut chidhaya, faltu ki tension di aur mostly dukhi bhi bahut kiya.
+                <br /><br />
+                Kahan socha tha kabhi ki kahan se baat shuru hui thi hamari, kaise aur kahan par pahunch gaye hain aaj, aur aapko pareshan karte-karte...
+                <br /><br />
+                I guess, kaafi kuch bhi dekha hai humne. Weeks tak koi baat na hone se lekar ek hi din mein 7–8 ghante baat ho jaana, hamara Pinterest aur pins ke through maze karna, mera line maarna... 😜😝
               </p>
               <p className="mt-4 text-lg leading-relaxed">
                 Thank you for suchh a wonderfull time and khusi ke pal... 💛💛
