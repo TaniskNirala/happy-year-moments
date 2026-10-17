@@ -71,7 +71,7 @@ const memories: Memory[] = [
     { src: m7.url, alt: "Together at the mall", big: true, title: "Best Photo Of the day", text: "Itna acha time spend kia sath me bhot majedar din rha tha yeh" },
     { src: m6.url, alt: "With friends in the car", title: "Barshh was the best addition", text: "Mummy yeh don mujhe bully krti hai..." },
     { src: m8.url, alt: "At the food court", title: "Ankh marti hui badmoshhh", text: "Fir khud ko madam masum kehti hai.Photos khichni ni ati madam but memores capture krni ati haii" },
-    { src: m9.url, alt: "Arcade fun", title: "Don Asli roop me" text: " Pure Vegitarian non veg kam krne ke bad, isi gun se mujhe mardooo donn..." },
+    { src: m9.url, alt: "Arcade fun", title: "Don Asli roop me", text: " Pure Vegitarian non veg kam krne ke bad, isi gun se mujhe mardooo donn..." },
     { src: m10.url, alt: "With the Spider-Man plush", title: "Hayeee yeh katilana judaaaa.....", text: "killing me sincee, pehli baar toh scl ke gate pr dekha tha..." },
     { src: m11.url, alt: "Holding a sunflower", title: "sunflower With A Real Flowerr..", text: "Jindgi me pehli baar kisi ke liye phool kharide the... , sorry vo khrab and single dene ke liye.🌻" },
     { src: m14, alt: "Two school captains in sashes", wide: true, title: "Bna hi diya apne head boyy 👻👻", text: "Yha jb apne bulaya photo ke liye tbhi mujhme himaat ai as mai toh genuinly ni puch pata us din bhi photo ke liye thannkkkk youuuuuu" },
