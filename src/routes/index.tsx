@@ -68,12 +68,12 @@ const scattered: { e?: string; w?: string; img?: string; t: string; l: string; r
 type Memory = { title: string; text: string; photos: { src: string; alt: string; big?: boolean; wide?: boolean; title?: string; text?: string; rotate?: 90 | -90 | 180; crop?: { x: number; y: number; w: number; h: number } }[] };
 const memories: Memory[] = [
   { title: "5 September 2026 Urf Teachers Day", text: "Best Photo Of the day, itna acha time spend kia sath me bhot majedar din rha tha yeh", photos: [
-    { src: m7.url, alt: "Together at the mall", big: true },
-    { src: m6.url, alt: "With friends in the car" },
-    { src: m8.url, alt: "At the food court" },
-    { src: m9.url, alt: "Arcade fun" },
-    { src: m10.url, alt: "With the Spider-Man plush" },
-    { src: m11.url, alt: "Holding a sunflower" },
+    { src: m7.url, alt: "Together at the mall", big: true, title: "5 September 2026", text: "Mall mein hum dono, topper ji ke saath selfie 📸" },
+    { src: m6.url, alt: "With friends in the car", title: "5 September 2026", text: "Peace sign wali ride ✌️ company achi thi" },
+    { src: m8.url, alt: "At the food court", title: "5 September 2026", text: "Food court, kyunki khana is a must 🍟" },
+    { src: m9.url, alt: "Arcade fun", title: "5 September 2026", text: "Arcade mein topper ji ka gun-wala avatar 🔫" },
+    { src: m10.url, alt: "With the Spider-Man plush", title: "5 September 2026", text: "Spider-Man ke saath dosti 🕷️" },
+    { src: m11.url, alt: "Holding a sunflower", title: "5 September 2026", text: "Sunflower aur ek pyaari si smile 🌻" },
     { src: m14, alt: "Two school captains in sashes", wide: true, title: "27 August 2026", text: "School ke captains 🎖️" },
   ] },
   { title: "16 September 2026", text: "Topper ji aur company 🎓", photos: [{ src: m12.url, alt: "Friends together at a desk" }] },
