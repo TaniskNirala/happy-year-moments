@@ -153,7 +153,7 @@ function CroppedImage({ src, alt, crop }: { src: string; alt: string; crop: Crop
   };
   useEffect(() => { if (ref.current?.complete) measure(ref.current); }, []);
   return (
-    <div className={`relative w-full overflow-hidden rounded-lg transition-opacity duration-300 ${ready ? "opacity-100" : "opacity-0"}`}
+    <div className={`relative w-full overflow-hidden rounded-[14px] transition-opacity duration-300 ${ready ? "opacity-100" : "opacity-0"}`}
       style={{ aspectRatio: `${(box.w / box.h) * ratio}` }}>
       <img ref={ref} src={src} alt={alt} onLoad={(e) => measure(e.currentTarget)}
         className="absolute block max-w-none"
@@ -169,9 +169,9 @@ function RotatedImage({ src, alt, deg }: { src: string; alt: string; deg: number
   const measure = (img: HTMLImageElement) => img.naturalWidth && setRatio(img.naturalWidth / img.naturalHeight);
   useEffect(() => { if (ref.current?.complete) measure(ref.current); }, []);
   const quarter = deg === 90 || deg === -90;
-  if (!quarter) return <img src={src} alt={alt} loading="lazy" className="block h-auto w-full rounded-lg" style={{ transform: `rotate(${deg}deg)` }} />;
+  if (!quarter) return <img src={src} alt={alt} loading="lazy" className="block h-auto w-full rounded-[14px]" style={{ transform: `rotate(${deg}deg)` }} />;
   return (
-    <div className="relative w-full overflow-hidden rounded-lg" style={{ aspectRatio: `${1 / ratio}` }}>
+    <div className="relative w-full overflow-hidden rounded-[14px]" style={{ aspectRatio: `${1 / ratio}` }}>
       <img ref={ref} src={src} alt={alt} onLoad={(e) => measure(e.currentTarget)}
         className="absolute left-1/2 top-1/2 block max-w-none"
         style={{ width: `${ratio * 100}%`, height: "auto", transform: `translate(-50%, -50%) rotate(${deg}deg)` }} />
@@ -184,9 +184,9 @@ function MemoryTile({ photo, memory, open, dimmed, onToggle }: {
   photo: Memory["photos"][number]; memory: Memory; open: boolean; dimmed: boolean; onToggle: () => void;
 }) {
   return (
-    <div className={`overflow-hidden rounded-xl bg-foreground p-1.5 text-primary-foreground shadow-lg transition-all duration-500 ease-out motion-reduce:transition-none ${dimmed ? "scale-[0.97] opacity-70" : ""}`}>
+    <div className={`overflow-hidden rounded-[20px] bg-foreground p-1.5 text-primary-foreground shadow-lg transition-all duration-500 ease-out motion-reduce:transition-none ${dimmed ? "scale-[0.97] opacity-70" : ""}`}>
       <button type="button" aria-expanded={open} aria-label={`Show memory: ${photo.title ?? memory.title}`} onClick={onToggle} className="block w-full">
-        {photo.crop ? <CroppedImage src={photo.src} alt={photo.alt} crop={photo.crop} /> : photo.rotate ? <RotatedImage src={photo.src} alt={photo.alt} deg={photo.rotate} /> : <img src={photo.src} alt={photo.alt} loading="lazy" className="block h-auto w-full rounded-lg" />}
+        {photo.crop ? <CroppedImage src={photo.src} alt={photo.alt} crop={photo.crop} /> : photo.rotate ? <RotatedImage src={photo.src} alt={photo.alt} deg={photo.rotate} /> : <img src={photo.src} alt={photo.alt} loading="lazy" className="block h-auto w-full rounded-[14px]" />}
       </button>
       <div aria-hidden={!open} className={`grid transition-all duration-500 ease-out motion-reduce:transition-none ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
         <div className="min-h-0 overflow-hidden">
