@@ -90,6 +90,7 @@ function Index() {
   const [tries, setTries] = useState(0);
   const [note, setNote] = useState("");
   const [mixerClicks, setMixerClicks] = useState(0);
+  const [openMem, setOpenMem] = useState<number | null>(null);
 
   const start = () => {
     setStarted(true);
@@ -146,19 +147,26 @@ function Index() {
 
           <Section>
             <h2 className="font-display text-5xl">Sweet Memories 🍨</h2>
+            <p className="mt-2 text-muted-foreground">Tap a photo... something slides up 👆</p>
             <div className="mt-10 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {memories.map((m, i) => (
-                <div key={i} className="rounded-md bg-foreground p-3 pb-5 text-primary-foreground shadow-2xl transition-transform hover:scale-105"
+                <button key={i} type="button" aria-expanded={openMem === i}
+                  onClick={() => setOpenMem((o) => (o === i ? null : i))}
+                  className="relative cursor-pointer overflow-hidden rounded-md bg-foreground p-3 pb-5 text-left text-primary-foreground shadow-2xl"
                   style={{ transform: `rotate(${i % 2 ? 2 : -2}deg)` }}>
                   {m.img ? (
-                    <img src={m.img} alt={m.title} loading="lazy" className="h-36 w-full rounded object-cover" />
+                    <img src={m.img} alt={m.title} loading="lazy" className="h-64 w-full rounded object-cover" />
                   ) : (
-                    <div className="flex h-36 items-center justify-center rounded bg-muted text-7xl">{m.e}</div>
+                    <div className="flex h-64 items-center justify-center rounded bg-muted text-7xl">{m.e}</div>
                   )}
-                  <h3 className="mt-3 font-display text-2xl">{m.title}</h3>
-
-                  <p className="mt-1 text-sm">{m.text}</p>
-                </div>
+                  {openMem !== i && (
+                    <span className="absolute right-5 top-5 rounded-full bg-background/70 px-3 py-1 text-xs font-bold text-foreground">tap 👆</span>
+                  )}
+                  <div className={`absolute inset-x-3 bottom-5 rounded-t-md border-t bg-foreground p-4 transition-transform duration-500 ease-out ${openMem === i ? "translate-y-0" : "translate-y-[calc(100%+1.5rem)]"}`}>
+                    <h3 className="font-display text-2xl">{m.title}</h3>
+                    <p className="mt-1 text-sm">{m.text}</p>
+                  </div>
+                </button>
               ))}
             </div>
 
