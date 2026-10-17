@@ -15,6 +15,7 @@ import m10 from "@/assets/mem10.jpg.asset.json";
 import m11 from "@/assets/mem11.jpg.asset.json";
 import m12 from "@/assets/mem12.jpg.asset.json";
 import m13 from "@/assets/mem13.jpg.asset.json";
+import m14 from "@/assets/mem14.jpg"; // added straight to the repo (not a Lovable asset)
 import { Button } from "@/components/ui/button";
 import clipRasamalai from "@/assets/clip-rasamalai.png";
 import clipBooks from "@/assets/clip-books.png";
@@ -58,11 +59,13 @@ const scattered: { e?: string; w?: string; img?: string; t: string; l: string; r
 
 
 // Dates come from the uploaded filenames; undated photos stay separate.
+// wide: a landscape photo that fills the empty space under two columns, at the bottom of its day-group.
+// title / text: give one photo its own date + caption instead of the day-group's.
 // big: show this photo larger (about 2/3 of the row) at the top of its day-group.
 // crop: show only part of a photo, as fractions of the full image (x, y = top-left corner; w, h = size).
 //       For phone screenshots the photo area is auto-detected; these numbers are only the fallback.
 // rotate: use when a photo was saved sideways. 90 = clockwise, -90 = counter-clockwise, 180 = upside down.
-type Memory = { title: string; text: string; photos: { src: string; alt: string; big?: boolean; rotate?: 90 | -90 | 180; crop?: { x: number; y: number; w: number; h: number } }[] };
+type Memory = { title: string; text: string; photos: { src: string; alt: string; big?: boolean; wide?: boolean; title?: string; text?: string; rotate?: 90 | -90 | 180; crop?: { x: number; y: number; w: number; h: number } }[] };
 const memories: Memory[] = [
   { title: "5 September 2026", text: "Ek din, itni saari memories… madam ji aur unke alag-alag moods 🖤", photos: [
     { src: m7.url, alt: "Together at the mall", big: true },
@@ -71,6 +74,7 @@ const memories: Memory[] = [
     { src: m9.url, alt: "Arcade fun" },
     { src: m10.url, alt: "With the Spider-Man plush" },
     { src: m11.url, alt: "Holding a sunflower" },
+    { src: m14, alt: "Two school captains in sashes", wide: true, title: "27 August 2026", text: "School ke captains 🎖️" },
   ] },
   { title: "16 September 2026", text: "Topper ji aur company 🎓", photos: [{ src: m12.url, alt: "Friends together at a desk" }] },
   { title: "29 August 2026", text: "Double cuteness, ek hi photo mein 💛", photos: [{ src: m13.url, alt: "With her little sister", crop: { x: 0.04, y: 0.377, w: 0.9, h: 0.222 } }] },
@@ -108,7 +112,7 @@ function findPhotoBox(img: HTMLImageElement): Crop | null {
   if (!ctx) return null;
   ctx.drawImage(img, 0, 0, W, H);
   const d = ctx.getImageData(0, 0, W, H).data; // throws if the image is cross-origin
-  const lum = (x: number, y: number) => { const i = (y * W + x) * 4; return 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]; };
+  const lum = (x: number, y: number) => { const i = (y * W + x) * 4; return 0.299 * (d[i] ?? 0) + 0.587 * (d[i + 1] ?? 0) + 0.114 * (d[i + 2] ?? 0); };
   const xa = Math.round(W * 0.08), xb = Math.round(W * 0.92);
   // longest run of bright rows (tolerating tiny gaps) = the photo band
   let best: [number, number] | null = null, start = -1, last = -1;
@@ -181,14 +185,14 @@ function MemoryTile({ photo, memory, open, dimmed, onToggle }: {
 }) {
   return (
     <div className={`overflow-hidden rounded-xl bg-foreground p-1.5 text-primary-foreground shadow-lg transition-all duration-500 ease-out motion-reduce:transition-none ${dimmed ? "scale-[0.97] opacity-70" : ""}`}>
-      <button type="button" aria-expanded={open} aria-label={`Show memory: ${memory.title}`} onClick={onToggle} className="block w-full">
+      <button type="button" aria-expanded={open} aria-label={`Show memory: ${photo.title ?? memory.title}`} onClick={onToggle} className="block w-full">
         {photo.crop ? <CroppedImage src={photo.src} alt={photo.alt} crop={photo.crop} /> : photo.rotate ? <RotatedImage src={photo.src} alt={photo.alt} deg={photo.rotate} /> : <img src={photo.src} alt={photo.alt} loading="lazy" className="block h-auto w-full rounded-lg" />}
       </button>
       <div aria-hidden={!open} className={`grid transition-all duration-500 ease-out motion-reduce:transition-none ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
         <div className="min-h-0 overflow-hidden">
           <div className="px-2 pb-2 pt-3 text-left">
-            <h3 className="font-display text-xl">{memory.title}</h3>
-            <p className="mt-1 text-sm">{memory.text}</p>
+            <h3 className="font-display text-xl">{photo.title ?? memory.title}</h3>
+            <p className="mt-1 text-sm">{photo.text ?? memory.text}</p>
           </div>
         </div>
       </div>
@@ -202,30 +206,88 @@ function MemoryGroup({ memory, laneCount, ratioOf, openSrc, onToggle }: { memory
     <MemoryTile key={photo.src} photo={photo} memory={memory} open={openSrc === photo.src}
       dimmed={openSrc !== null && openSrc !== photo.src} onToggle={() => onToggle(photo.src)} />
   );
-  // A `big` photo (on wide screens) takes ~2/3 of the top row, with the next photo beside it.
-  const feature = laneCount > 1 ? memory.photos.find((ph) => ph.big) : undefined;
-  const others = memory.photos.filter((ph) => ph !== feature);
+  // `big`: on wide screens (3 lanes) this photo spans 2 lanes at the top; the next photo sits beside it.
+  // `wide`: a landscape photo that fills the empty space under two lanes, at the bottom.
+  const feature = laneCount === 3 ? memory.photos.find((ph) => ph.big) : undefined;
+  const wide = laneCount > 1 ? memory.photos.find((ph) => ph.wide) : undefined;
+  const others = memory.photos.filter((ph) => ph !== feature && ph !== wide);
   const side = feature ? others[0] : undefined;
   const rest = feature ? others.slice(1) : others;
-  // Put each photo into the currently shortest lane so the block ends up even (no empty holes).
+
+  // Try every way of dealing the photos into lanes and keep the one with the least empty space
+  // (a day has only a handful of photos, so this is instant).
+  const wideH = wide ? ratioOf(wide.src) * 2 : 0; // the wide photo spans two lanes
+  const base: number[] = Array(laneCount).fill(0);
+  if (feature) {
+    base[0] = base[1] = 2 * ratioOf(feature.src); // lanes 0 and 1 start below the big photo
+    if (side) base[2] = ratioOf(side.src);
+  }
+  const holes = (h: number[], pair: number | null) => {
+    const f = h.slice();
+    let cost = 0;
+    if (pair !== null) {
+      const top = Math.max(f[pair] ?? 0, f[pair + 1] ?? 0);
+      cost += top - (f[pair] ?? 0) + (top - (f[pair + 1] ?? 0)); // gap under the shorter of the two lanes
+      f[pair] = f[pair + 1] = top + wideH;
+    }
+    const tallest = Math.max(...f);
+    return cost + f.reduce((t, v) => t + (tallest - v), 0);
+  };
+  const pairs: (number | null)[] = wide && laneCount >= 2 ? (feature ? [0] : Array.from({ length: laneCount - 1 }, (_, i) => i)) : [null];
+  const n = rest.length;
+  let assign: number[] = rest.map((_, k) => k % laneCount); // fallback: round-robin
+  let pair: number | null = pairs[0] ?? null;
+  if (laneCount ** n <= 50000) {
+    let best = Infinity;
+    for (let code = 0; code < laneCount ** n; code++) {
+      const h = base.slice();
+      const trial: number[] = [];
+      let c = code;
+      for (let k = 0; k < n; k++) {
+        const l = c % laneCount;
+        c = Math.floor(c / laneCount);
+        trial.push(l);
+        h[l] = (h[l] ?? 0) + ratioOf(rest[k]?.src ?? "");
+      }
+      for (const pr of pairs) {
+        const cost = holes(h, pr);
+        if (cost < best - 1e-9) { best = cost; assign = trial; pair = pr; }
+      }
+    }
+  }
   const lanes: Memory["photos"][] = Array.from({ length: laneCount }, () => []);
-  const laneH: number[] = Array(laneCount).fill(0);
-  rest.forEach((ph) => { const c = laneH.indexOf(Math.min(...laneH)); lanes[c].push(ph); laneH[c] += ratioOf(ph.src); });
+  rest.forEach((ph, k) => lanes[assign[k] ?? 0]?.push(ph));
+  const lane = (c: number, lead?: React.ReactNode) => (
+    <div key={c} className="flex min-w-0 flex-1 flex-col gap-1.5">{lead}{(lanes[c] ?? []).map(tile)}</div>
+  );
+
+  if (feature) {
+    return (
+      <div className="flex items-start gap-1.5">
+        <div className="flex min-w-0 flex-[2] flex-col gap-1.5">
+          {tile(feature)}
+          <div className="flex items-start gap-1.5">{lane(0)}{lane(1)}</div>
+          {wide && tile(wide)}
+        </div>
+        {lane(2, side && tile(side))}
+      </div>
+    );
+  }
+
+  // no big photo: the wide photo goes under the two neighbouring lanes picked above (where the empty space is)
+  const p = pair ?? 0;
   return (
-    <div className="flex flex-col gap-1.5">
-      {feature && (
-        <div className="flex items-start gap-1.5">
-          <div className="min-w-0 flex-[2]">{tile(feature)}</div>
-          {side && <div className="min-w-0 flex-1">{tile(side)}</div>}
-        </div>
-      )}
-      {rest.length > 0 && (
-        <div className="flex items-start gap-1.5">
-          {lanes.map((lane, c) => (
-            <div key={c} className="flex min-w-0 flex-1 flex-col gap-1.5">{lane.map(tile)}</div>
-          ))}
-        </div>
-      )}
+    <div className="flex items-start gap-1.5">
+      {wide && laneCount >= 2 ? (
+        <>
+          {lanes.slice(0, p).map((_, c) => lane(c))}
+          <div className="flex min-w-0 flex-[2] flex-col gap-1.5">
+            <div className="flex items-start gap-1.5">{lane(p)}{lane(p + 1)}</div>
+            {tile(wide)}
+          </div>
+          {lanes.slice(p + 2).map((_, c) => lane(p + 2 + c))}
+        </>
+      ) : lanes.map((_, c) => lane(c))}
     </div>
   );
 }
@@ -284,7 +346,7 @@ function Index() {
   const spread = (list: Memory[]) => {
     const out: Memory[][] = Array.from({ length: cols }, () => []);
     const heights: number[] = Array(cols).fill(0);
-    list.forEach((m) => { const c = heights.indexOf(Math.min(...heights)); out[c].push(m); heights[c] += m.photos.reduce((t, ph) => t + ratioOf(ph.src), 0) + 0.1; });
+    list.forEach((m) => { const c = heights.indexOf(Math.min(...heights)); out[c]?.push(m); heights[c] = (heights[c] ?? 0) + m.photos.reduce((t, ph) => t + ratioOf(ph.src), 0) + 0.1; });
     return out;
   };
   const segments: ({ big: Memory } | { cols: Memory[][] })[] = [];
