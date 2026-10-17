@@ -126,14 +126,14 @@ function Index() {
             <div id="msg" className="max-w-2xl rounded-[var(--radius)] border bg-card p-8 backdrop-blur md:p-12">
               <h2 className="font-display text-4xl text-accent">A small message 🐼</h2>
               <p className="mt-6 text-lg leading-relaxed">
-                Pta Ni Na madam Ji kaise ek sal nikal gya apko pareshan krte kre bhot dimag khaya apka bhot chidhya faltu ki tesnion di 
+                Pta Ni Na madam Ji kaise ek sal nikal gya apko pareshan krte kre bhot dimag khaya apka bhot chidhya faltu ki tesnion di and mostly dukhhi bhi bhot kra.
                 <br />
-                One whole year ago, you had no idea what you were signing up for. 365 days of me
-                tanging you, calling you <b>Topper</b>, and being an absolute headache. And somehow
-                you're still here (probably because you were sleeping through most of it 😴).
+                kha se socha tha kabhi ki kha se baat shuru hui thi hamari kaise and kha pr pahuch gye hai apko parehsan krte krte
+                <br />
+                i gues kai chije bhi dekhi hai weeks tk koi baat na hone se leke ek hi din me 7-8 ghnte baat ho jana, hamara pintrest and pins ke through maje krna, mera line marna 😜😜
               </p>
               <p className="mt-4 text-lg leading-relaxed">
-                Thank you for being the best friend a dosa-stealing idiot could ask for. 🖤
+                Thank you for suchh a wonderfull time and khusi ke pal... 💛💛
               </p>
             </div>
           </Section>
@@ -206,12 +206,12 @@ function Index() {
             <img src={panda} alt="Happy panda" width={816} height={816} loading="lazy" className="w-48" />
             <h2 className="font-display text-5xl md:text-7xl">Thank You 🖤</h2>
             <p className="mt-6 max-w-xl text-xl leading-relaxed">
-              For the ice creams, the cloudy-day happiness, the naps, the dosas, and for tolerating me.
+              For tolerating me and my flent nonsence.
             </p>
             <p className="mt-8 font-display text-3xl text-primary md:text-5xl">
               And I want to tang you forever, madam ji! 🐼🍦
             </p>
-            <p className="mt-6 text-muted-foreground">— your favourite headache</p>
+            <p className="mt-6 text-muted-foreground">— your favourite (shayad) headachee</p>
           </Section>
         </>
       )}
