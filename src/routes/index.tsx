@@ -16,6 +16,7 @@ import m11 from "@/assets/mem11.jpg.asset.json";
 import m12 from "@/assets/mem12.jpg.asset.json";
 import m13 from "@/assets/mem13.jpg.asset.json";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import clipRasamalai from "@/assets/clip-rasamalai.png";
 import clipBooks from "@/assets/clip-books.png";
 import clipRuler from "@/assets/clip-ruler.png";
@@ -78,6 +79,11 @@ const memories: Memory[] = [
 ];
 
 
+// Flatten memory groups into one photo wall; each photo keeps its group's date + caption for the lightbox.
+const gallery = memories.flatMap((m) => m.photos.map((photo) => ({ ...photo, title: m.title, text: m.text })));
+// Cycled aspect ratios give the masonry wall its mixed-size look.
+const tileAspects = ["aspect-[4/5]", "aspect-square", "aspect-[3/4]", "aspect-[4/3]", "aspect-[4/5]", "aspect-[5/6]"];
+
 const questions = [
   "How much did you enjoy being tanged this year?",
   "Rate my jokes (be honest... or kind)",
@@ -107,7 +113,8 @@ function Index() {
   const [tries, setTries] = useState(0);
   const [note, setNote] = useState("");
   const [mixerClicks, setMixerClicks] = useState(0);
-  const [openMem, setOpenMem] = useState<number | null>(null);
+  const [lightbox, setLightbox] = useState<number | null>(null);
+  const step = (d: number) => setLightbox((i) => (i === null ? i : (i + d + gallery.length) % gallery.length));
 
   const start = () => {
     setStarted(true);
@@ -164,28 +171,38 @@ function Index() {
 
           <Section>
             <h2 className="font-display text-5xl">Sweet Memories 🍨</h2>
-            <div className="mt-10 grid w-full max-w-5xl grid-cols-1 items-start gap-6 sm:grid-cols-2">
-              {memories.map((m, i) => (
-                <Button key={m.title} type="button" variant="ghost" aria-label={`Show memory: ${m.title}`} aria-expanded={openMem === i}
-                  onClick={() => setOpenMem((o) => (o === i ? null : i))}
-                  className={`block h-auto w-full overflow-hidden whitespace-normal rounded-md bg-foreground p-2 text-left text-primary-foreground hover:bg-foreground hover:text-primary-foreground ${m.photos.length > 1 ? "sm:col-span-2" : ""}`}>
-                  <div className={m.photos.length > 1 ? "grid grid-cols-2 gap-2 sm:grid-cols-3" : "grid grid-cols-1"}>
-                    {m.photos.map((photo) => (
-                      <img key={photo.src} src={photo.src} alt={photo.alt} loading="lazy"
-                        className="aspect-[4/5] w-full rounded-sm object-cover" />
-                    ))}
-                  </div>
-                  <div aria-hidden={openMem !== i} className={`grid transition-all duration-500 ease-out motion-reduce:transition-none ${openMem === i ? "mt-3 grid-rows-[1fr] opacity-100" : "mt-0 grid-rows-[0fr] opacity-0"}`}>
-                    <div className="min-h-0 overflow-hidden">
-                      <div className={`border-t px-2 pb-2 pt-3 transition-transform duration-500 ease-out motion-reduce:transition-none ${openMem === i ? "translate-y-0" : "translate-y-full"}`}>
-                        <h3 className="font-display text-2xl">{m.title}</h3>
-                        <p className="mt-1 text-sm">{m.text}</p>
-                      </div>
-                    </div>
-                  </div>
-                </Button>
+            <div className="mt-10 w-full max-w-5xl columns-2 gap-3 sm:columns-3 lg:columns-4">
+              {gallery.map((g, i) => (
+                <button key={g.src} type="button" aria-label={`Open memory: ${g.title}`} onClick={() => setLightbox(i)}
+                  className="group relative mb-3 block w-full break-inside-avoid overflow-hidden rounded-md bg-foreground p-1.5 shadow-lg transition-transform duration-300 hover:-translate-y-1 hover:rotate-[0.5deg] focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary motion-reduce:transition-none">
+                  <img src={g.src} alt={g.alt} loading="lazy" className={`${tileAspects[i % tileAspects.length]} w-full rounded-sm object-cover`} />
+                  <span className="pointer-events-none absolute inset-x-1.5 bottom-1.5 rounded-b-sm bg-gradient-to-t from-black/70 to-transparent px-2 pb-1.5 pt-6 text-left text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+                    {g.title}
+                  </span>
+                </button>
               ))}
             </div>
+
+            <Dialog open={lightbox !== null} onOpenChange={(o) => !o && setLightbox(null)}>
+              <DialogContent className="max-w-3xl border-0 bg-foreground p-3 text-primary-foreground"
+                onKeyDown={(e) => { if (e.key === "ArrowRight") step(1); if (e.key === "ArrowLeft") step(-1); }}>
+                {lightbox !== null && (
+                  <div className="flex flex-col gap-3">
+                    <div className="relative">
+                      <img src={gallery[lightbox].src} alt={gallery[lightbox].alt} className="max-h-[70vh] w-full rounded-sm object-contain" />
+                      <button type="button" aria-label="Previous photo" onClick={() => step(-1)}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 px-3 py-2 text-2xl text-white hover:bg-black/70">‹</button>
+                      <button type="button" aria-label="Next photo" onClick={() => step(1)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 px-3 py-2 text-2xl text-white hover:bg-black/70">›</button>
+                    </div>
+                    <div className="px-2 pb-2 text-left">
+                      <DialogTitle className="font-display text-2xl">{gallery[lightbox].title}</DialogTitle>
+                      <DialogDescription className="mt-1 text-sm text-primary-foreground/80">{gallery[lightbox].text}</DialogDescription>
+                    </div>
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
 
             <div className="mt-16 max-w-md rounded-[var(--radius)] border bg-card p-6">
               <img src={mixer} alt="Evil mixer" width={816} height={816} loading="lazy"
