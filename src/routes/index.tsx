@@ -104,9 +104,9 @@ function Index() {
       {/* scattered background polaroids */}
       <div className="pointer-events-none fixed inset-0 z-0">
         {scattered.map((s, i) => (
-          <div key={i} className={s.w ? "floaty absolute font-display opacity-20" : "floaty absolute rounded-md bg-foreground p-2 pb-6 opacity-20 shadow-xl"}
+          <div key={i} className={s.w ? "floaty absolute font-display opacity-20" : s.img ? "floaty absolute" : "floaty absolute rounded-md bg-foreground p-2 pb-6 opacity-20 shadow-xl"}
             style={{ top: s.t, left: s.l, ["--r" as string]: s.r, animationDelay: `${i * 0.7}s`, fontSize: s.w ? "2.2rem" : undefined, color: s.w ? "var(--primary)" : undefined }}>
-            {s.w ? s.w : <div className="flex h-20 w-20 items-center justify-center bg-muted text-5xl">{s.e}</div>}
+            {s.w ? s.w : s.img ? <img src={s.img} alt="" loading="lazy" width={816} height={816} className="w-24 opacity-25" /> : <div className="flex h-20 w-20 items-center justify-center bg-muted text-5xl">{s.e}</div>}
           </div>
         ))}
         <div className="drift absolute top-[12%] text-7xl opacity-30">☁️</div>
