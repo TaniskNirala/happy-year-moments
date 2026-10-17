@@ -160,9 +160,9 @@ function Index() {
                     <div className="flex h-64 items-center justify-center rounded bg-muted text-7xl">{m.e}</div>
                   )}
                   {openMem !== i && (
-                    <span className="absolute right-5 top-5 rounded-full bg-background/70 px-3 py-1 text-xs font-bold">tap 👆</span>
+                    <span className="absolute right-5 top-5 rounded-full bg-background/70 px-3 py-1 text-xs font-bold text-foreground">tap 👆</span>
                   )}
-                  <div className={`absolute inset-x-0 bottom-0 rounded-t-md border-t bg-card/95 p-4 backdrop-blur transition-transform duration-500 ease-out ${openMem === i ? "translate-y-0" : "translate-y-full"}`}>
+                  <div className={`absolute inset-x-3 bottom-5 rounded-t-md border-t bg-foreground p-4 transition-transform duration-500 ease-out ${openMem === i ? "translate-y-0" : "translate-y-[calc(100%+1.5rem)]"}`}>
                     <h3 className="font-display text-2xl">{m.title}</h3>
                     <p className="mt-1 text-sm">{m.text}</p>
                   </div>
